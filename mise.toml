@@ -25,10 +25,6 @@ gh = 'latest'
 jq = 'latest'
 
 
-[vars]
-test_results = '.cache/test-results.xml'
-
-
 [tasks.fmt]
 description = 'Format all code'
 depends = ['fmt:*']
@@ -68,8 +64,14 @@ run = 'zip -r - metadata.json contents >.cache/kwin-last-used-desktops.kwinscrip
 description = 'Install the KWin script'
 depends = ['build']
 run = '''
+#!/bin/bash -eux
 kpackagetool6 --remove kwin-last-used-desktops --type KWin/Script 2>/dev/null || true
 kpackagetool6 --install .cache/kwin-last-used-desktops.kwinscript --type KWin/Script
+kwriteconfig6 --file kwinrc --group Plugins --key kwin-last-used-desktopsEnabled false
+qdbus org.kde.KWin /KWin reconfigure
+sleep 1
+kwriteconfig6 --file kwinrc --group Plugins --key kwin-last-used-desktopsEnabled true
+qdbus org.kde.KWin /KWin reconfigure
 '''
 
 [tasks.'changelog:skip-commit']
