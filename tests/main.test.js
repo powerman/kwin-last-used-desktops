@@ -80,8 +80,8 @@ describe('LastUsedDesktops Integration', () => {
             expect.any(Function),
         );
 
-        // Should register shortcuts for all desktops (4 in our mock)
-        for (let i = 1; i <= 4; i++) {
+        // Should register shortcuts for 20 desktops (4 in our mock)
+        for (let i = 1; i <= 20; i++) {
             expect(mockRegisterShortcut).toHaveBeenCalledWith(
                 `Go to Desktop ${i}`,
                 `Navigate to virtual desktop ${i} with toggle`,
@@ -90,8 +90,8 @@ describe('LastUsedDesktops Integration', () => {
             );
         }
 
-        // Total calls: 1 (history) + 4 (desktops) = 5
-        expect(mockRegisterShortcut).toHaveBeenCalledTimes(5);
+        // Total calls: 1 (history) + 20 (desktops) = 21
+        expect(mockRegisterShortcut).toHaveBeenCalledTimes(21);
     });
 
     test('should connect to workspace signals', () => {

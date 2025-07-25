@@ -209,18 +209,18 @@ describe('Potential Bug Exposure Tests', () => {
         });
 
         test('should handle desktop number not in map', () => {
-            mockWorkspace = createMockWorkspace({ desktopCount: 2 }); // Only 2 desktops
+            mockWorkspace = createMockWorkspace({ desktopCount: 22 }); // Only 22 desktops
             global.workspace = mockWorkspace;
 
             loadScript();
 
-            // Try to access desktop 3 (doesn't exist)
-            const desktop3Shortcut = mockRegisterShortcut.mock.calls.find(
-                call => call[0] === 'Go to Desktop 3',
+            // Try to access desktop 23 (doesn't exist)
+            const desktop23Shortcut = mockRegisterShortcut.mock.calls.find(
+                call => call[0] === 'Go to Desktop 23',
             );
 
-            // Desktop 3 shortcut should not be registered since we only have 2 desktops
-            expect(desktop3Shortcut).toBeUndefined();
+            // Desktop 23 shortcut should not be registered since we only have 2 desktops
+            expect(desktop23Shortcut).toBeUndefined();
         });
     });
 });

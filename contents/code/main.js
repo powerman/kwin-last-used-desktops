@@ -88,7 +88,7 @@ class LastUsedDesktops {
             `LastUsedDesktops: Registering shortcuts for ${workspace.desktops.length} desktops`,
         );
 
-        for (let i = 1; i <= workspace.desktops.length; i++) {
+        for (let i = 1; i <= Math.max(20, workspace.desktops.length); i++) {
             registerShortcut(
                 `Go to Desktop ${i}`,
                 `Navigate to virtual desktop ${i} with toggle`,
