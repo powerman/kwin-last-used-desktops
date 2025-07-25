@@ -101,7 +101,7 @@ describe('Bug Reproduction Tests', () => {
     });
 
     describe('Bug 1: History Navigation Sequence Issue', () => {
-        test('reproduces the user\'s exact bug scenario', () => {
+        test("reproduces the user's exact bug scenario", () => {
             // Simulate user's scenario: 7→8→9→10→7
             console.log('=== REPRODUCING BUG 1 ===');
 

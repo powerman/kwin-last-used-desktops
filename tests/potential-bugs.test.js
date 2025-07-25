@@ -24,10 +24,10 @@ function createMockWorkspace(options = {}) {
 
     const desktops = config.hasDesktops
         ? Array.from({ length: config.desktopCount }, (_, i) => ({
-            id: testUUIDs[i] || `test-uuid-${i}`,
-            x11DesktopNumber: i + 1,
-            name: `Desktop ${i + 1}`,
-        }))
+              id: testUUIDs[i] || `test-uuid-${i}`,
+              x11DesktopNumber: i + 1,
+              name: `Desktop ${i + 1}`,
+          }))
         : [];
 
     return {

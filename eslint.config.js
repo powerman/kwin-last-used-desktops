@@ -21,9 +21,7 @@ export default [
             strict: ['error', 'global'],
 
             // Style (following modern JS standards).
-            indent: ['error', 4],
             'linebreak-style': ['error', 'unix'],
-            quotes: ['error', 'single'],
             semi: ['error', 'always'],
             camelcase: ['error', { properties: 'always' }],
             'brace-style': ['error', '1tbs'],
@@ -56,9 +54,7 @@ export default [
             },
         },
         rules: {
-            indent: ['error', 4],
             'linebreak-style': ['error', 'unix'],
-            quotes: ['error', 'single'],
             semi: ['error', 'always'],
             'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
             'no-console': 'off',
@@ -79,9 +75,7 @@ export default [
             },
         },
         rules: {
-            indent: ['error', 4],
             'linebreak-style': ['error', 'unix'],
-            quotes: ['error', 'single'],
             semi: ['error', 'always'],
             'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
             'no-console': 'off',
