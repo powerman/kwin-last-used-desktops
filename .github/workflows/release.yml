@@ -1,0 +1,77 @@
+name: Release
+
+on:
+  push: # To create/update release PR and to make a release.
+  pull_request: # To update release PR after manually changing version for the next release.
+    types: [edited]
+
+permissions:
+  contents: write # To create/update release_pr branch, create a release and a tag.
+  pull-requests: write # To create/update PR from release_pr branch.
+  id-token: write # For cosign signing.
+
+env:
+  GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+
+jobs:
+  release-pr:
+    uses: powerman/workflows/.github/workflows/release-pr.yml@v0.4.1
+    with:
+      version_cmd: |
+        jq '.KPlugin.Version = (env.RELEASE_PR_VERSION|ltrimstr("v"))' metadata.json > tmp.json && mv tmp.json metadata.json
+        jq '.version = (env.RELEASE_PR_VERSION|ltrimstr("v"))' package.json > tmp.json && mv tmp.json package.json
+    secrets:
+      TOKEN: ${{ secrets.RELEASE_TOKEN }}
+
+  build-and-upload:
+    needs: [release-pr]
+    if: ${{ needs.release-pr.outputs.result == 'released' }}
+    permissions:
+      contents: write # To upload to GitHub release.
+      id-token: write # For cosign signing.
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ env.GITHUB_TOKEN }}
+
+      - uses: jdx/mise-action@v2
+
+      - run: mise run build
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3
+
+      - name: Sign assets with cosign
+        run: cosign sign-blob --yes .cache/kwin-last-used-desktops.kwinscript --output-signature .cache/kwin-last-used-desktops.kwinscript.sig
+
+      - name: Upload files to the release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.release-pr.outputs.version }}
+          body: ${{ needs.release-pr.outputs.changelog }}
+          files: .cache/kwin-last-used-desktops.kwinscript*
+          draft: true
+          prerelease: ${{ needs.release-pr.outputs.prerelease }}
+          make_latest: false
+          token: ${{ env.GITHUB_TOKEN }}
+
+  # Mark release as non-draft and latest.
+  finalize:
+    needs: [release-pr, build-and-upload]
+    if: ${{ needs.release-pr.outputs.result == 'released' }}
+    permissions:
+      contents: write # To update the GitHub release.
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.release-pr.outputs.version }}
+          body: ${{ needs.release-pr.outputs.changelog }}
+          draft: false
+          prerelease: ${{ needs.release-pr.outputs.prerelease }}
+          make_latest: true
+          token: ${{ env.GITHUB_TOKEN }}

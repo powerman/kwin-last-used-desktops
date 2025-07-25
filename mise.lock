@@ -1,0 +1,36 @@
+[tools.actionlint]
+version = "1.7.7"
+backend = "aqua:rhysd/actionlint"
+
+[tools.gh]
+version = "2.75.0"
+backend = "aqua:cli/cli"
+
+[tools.git-cliff]
+version = "2.9.1"
+backend = "aqua:orhun/git-cliff"
+
+[tools.jq]
+version = "1.8.1"
+backend = "aqua:jqlang/jq"
+
+[tools.jq.platforms.linux-x64]
+checksum = "sha256:020468de7539ce70ef1bceaf7cde2e8c4f2ca6c3afb84642aabc5c97d9fc2a0d"
+size = 2255816
+url = "https://github.com/jqlang/jq/releases/download/jq-1.8.1/jq-linux-amd64"
+
+[tools.node]
+version = "22.17.1"
+backend = "core:node"
+
+[tools."npm:eslint"]
+version = "9.31.0"
+backend = "npm:eslint"
+
+[tools."npm:jest"]
+version = "30.0.5"
+backend = "npm:jest"
+
+[tools."npm:prettier"]
+version = "3.6.2"
+backend = "npm:prettier"

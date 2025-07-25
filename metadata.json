@@ -1,0 +1,18 @@
+{
+  "KPackageStructure": "KWin/Script",
+  "KPlugin": {
+    "Authors": [
+      {
+        "Email": "powerman@powerman.name",
+        "Name": "Alex Efros"
+      }
+    ],
+    "Description": "Navigate through virtual desktops using history-based switching and desktop toggle functionality",
+    "Icon": "preferences-desktop-virtual",
+    "Id": "kwin-last-used-desktops",
+    "Version": "0.1.0",
+    "License": "MIT",
+    "Name": "Last Used Virtual Desktops"
+  },
+  "X-Plasma-API": "javascript"
+}
