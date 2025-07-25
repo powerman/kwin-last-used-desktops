@@ -110,8 +110,6 @@ describe('LastUsedDesktops Integration', () => {
         expect(console.info).toHaveBeenCalledWith(
             `LastUsedDesktops: Initialized with desktop ${mockUUIDs[0]}`,
         );
-
-        expect(console.info).toHaveBeenCalledWith('LastUsedDesktops: Initialized successfully');
     });
 
     test('should build desktop number mapping', () => {
@@ -153,9 +151,6 @@ describe('LastUsedDesktops Integration', () => {
 
         expect(console.info).toHaveBeenCalledWith(
             'LastUsedDesktops: Registering shortcuts for 4 desktops',
-        );
-        expect(console.info).toHaveBeenCalledWith(
-            'LastUsedDesktops: Registered 4 direct desktop shortcuts',
         );
     });
 });

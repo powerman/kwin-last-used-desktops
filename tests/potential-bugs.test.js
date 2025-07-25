@@ -95,34 +95,6 @@ describe('Potential Bug Exposure Tests', () => {
             // workspace.currentDesktop should remain unchanged
             expect(mockWorkspace.currentDesktop).toBe(mockWorkspace.desktops[0]);
         });
-
-        test('should handle empty workspace.desktops array', () => {
-            mockWorkspace = createMockWorkspace({ hasDesktops: false });
-            global.workspace = mockWorkspace;
-
-            expect(() => {
-                loadScript();
-            }).not.toThrow();
-
-            // Should warn about no desktops available
-            expect(mockConsole.warn).toHaveBeenCalledWith(
-                'LastUsedDesktops: No desktops available for mapping',
-            );
-        });
-
-        test('should handle null currentDesktop during initialization', () => {
-            mockWorkspace = createMockWorkspace({ hasCurrentDesktop: false });
-            global.workspace = mockWorkspace;
-
-            expect(() => {
-                loadScript();
-            }).not.toThrow();
-
-            // Should warn about invalid current desktop
-            expect(mockConsole.warn).toHaveBeenCalledWith(
-                'LastUsedDesktops: Could not initialize - invalid current desktop',
-            );
-        });
     });
 
     describe('Bug 2: Desktop Number Mapping Edge Cases', () => {
@@ -195,29 +167,6 @@ describe('Potential Bug Exposure Tests', () => {
     });
 
     describe('Bug 4: History Management Edge Cases', () => {
-        test('should handle addToHistory with invalid desktop ID', () => {
-            mockWorkspace = createMockWorkspace();
-            global.workspace = mockWorkspace;
-
-            const lastUsedDesktops = loadScript();
-
-            const initialHistoryLength = lastUsedDesktops.desktopHistory.length;
-
-            // Try to add invalid desktop ID
-            lastUsedDesktops.addToHistory('not-a-uuid');
-            lastUsedDesktops.addToHistory('');
-            lastUsedDesktops.addToHistory(null);
-            lastUsedDesktops.addToHistory(undefined);
-
-            // History should not have grown
-            expect(lastUsedDesktops.desktopHistory.length).toBe(initialHistoryLength);
-
-            // Should have logged warnings
-            expect(mockConsole.warn).toHaveBeenCalledWith(
-                expect.stringContaining('Invalid desktop ID'),
-            );
-        });
-
         test('should handle cleanupHistory with all invalid desktops', () => {
             mockWorkspace = createMockWorkspace();
             global.workspace = mockWorkspace;
@@ -231,34 +180,6 @@ describe('Potential Bug Exposure Tests', () => {
 
             // All should be removed
             expect(lastUsedDesktops.desktopHistory).toEqual([]);
-        });
-    });
-
-    describe('Bug 5: getCurrentDesktopId Edge Cases', () => {
-        test('should handle workspace.currentDesktop being null', () => {
-            mockWorkspace = createMockWorkspace();
-            global.workspace = mockWorkspace;
-
-            const lastUsedDesktops = loadScript();
-
-            // Simulate currentDesktop becoming null during runtime
-            mockWorkspace.currentDesktop = null;
-
-            const result = lastUsedDesktops.getCurrentDesktopId();
-            expect(result).toBe(null);
-        });
-
-        test('should handle workspace.currentDesktop without id property', () => {
-            mockWorkspace = createMockWorkspace();
-            global.workspace = mockWorkspace;
-
-            const lastUsedDesktops = loadScript();
-
-            // Simulate corrupted desktop object
-            mockWorkspace.currentDesktop = { name: 'Desktop 1' }; // Missing id
-
-            const result = lastUsedDesktops.getCurrentDesktopId();
-            expect(result).toBe(null);
         });
     });
 

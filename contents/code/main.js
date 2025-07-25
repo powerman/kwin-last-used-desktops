@@ -15,48 +15,27 @@ class LastUsedDesktops {
      * Initialize the desktop navigation system.
      */
     constructor() {
+        /** @type {Object<number, string>} Map of x11DesktopNumber to desktop ID. */
+        this.desktopNumberMap = {};
+
         /** @type {string[]} History of desktop IDs (UUID strings) in usage order. */
-        this.desktopHistory = [];
-
-        /** @type {number} Delay in ms to detect continuation of shortcut presses. */
-        this.continuationDelay = 500;
-
-        /** @type {number} Timestamp of last shortcut trigger. */
-        this.lastTriggerTime = 0;
-
+        this.desktopHistory = [workspace.currentDesktop.id];
         /** @type {number} Current position in history during navigation. */
         this.historyIndex = 0;
 
-        /** @type {boolean} Flag to prevent recursive desktop change events. */
-        this.isNavigating = false;
+        /** @type {number} Delay in ms to detect continuation of shortcut presses. */
+        this.continuationDelay = 500;
+        /** @type {number} Timestamp of last shortcut trigger. */
+        this.lastTriggerTime = 0;
 
         /** @type {string|null} Desktop ID buffered during navigation sequence. */
         this.navigationBuffer = null;
 
-        /** @type {Object<number, string>} Map of x11DesktopNumber to desktop ID. */
-        this.desktopNumberMap = {};
-
-        this.initializeHistory();
         this.buildDesktopNumberMap();
         this.connectSignals();
         this.registerShortcuts();
 
-        console.info('LastUsedDesktops: Initialized successfully');
-    }
-
-    /**
-     * Initialize desktop history with current desktop.
-     * @private
-     */
-    initializeHistory() {
-        if (workspace.currentDesktop && this.isValidDesktopId(workspace.currentDesktop.id)) {
-            this.desktopHistory = [workspace.currentDesktop.id];
-            console.info(
-                `LastUsedDesktops: Initialized with desktop ${workspace.currentDesktop.id}`,
-            );
-        } else {
-            console.warn('LastUsedDesktops: Could not initialize - invalid current desktop');
-        }
+        console.info(`LastUsedDesktops: Initialized with desktop ${this.desktopHistory[0]}`);
     }
 
     /**
@@ -64,25 +43,16 @@ class LastUsedDesktops {
      * @private
      */
     buildDesktopNumberMap() {
-        this.desktopNumberMap = {};
-
-        if (!workspace.desktops || workspace.desktops.length === 0) {
-            console.warn('LastUsedDesktops: No desktops available for mapping');
-            return;
-        }
-
         console.info(
             `LastUsedDesktops: Building desktop number map for ${workspace.desktops.length} desktops`,
         );
 
+        this.desktopNumberMap = {};
         for (let i = 0; i < workspace.desktops.length; i++) {
             const desktop = workspace.desktops[i];
-            if (desktop && this.isValidDesktopId(desktop.id)) {
-                // Use array index + 1 as desktop number if x11DesktopNumber is not available.
-                const desktopNumber = desktop.x11DesktopNumber || i + 1;
-                this.desktopNumberMap[desktopNumber] = desktop.id;
-                console.info(`LastUsedDesktops: Desktop ${desktopNumber} -> ${desktop.id}`);
-            }
+            const desktopNumber = desktop.x11DesktopNumber || i + 1;
+            this.desktopNumberMap[desktopNumber] = desktop.id;
+            console.info(`LastUsedDesktops: Desktop ${desktopNumber} -> ${desktop.id}`);
         }
     }
 
@@ -92,12 +62,9 @@ class LastUsedDesktops {
      */
     connectSignals() {
         workspace.currentDesktopChanged.connect(desktop => {
-            if (desktop && this.isValidDesktopId(desktop.id)) {
-                this.addToHistory(desktop.id);
-            }
+            this.addToHistory(desktop.id);
         });
 
-        // Rebuild desktop mapping when desktops change.
         workspace.desktopsChanged.connect(() => {
             console.info('LastUsedDesktops: Desktops changed, rebuilding map');
             this.buildDesktopNumberMap();
@@ -110,7 +77,6 @@ class LastUsedDesktops {
      * @private
      */
     registerShortcuts() {
-        // History navigation shortcut.
         registerShortcut(
             'Last Used Virtual Desktops',
             'Navigate to previously used virtual desktop',
@@ -118,11 +84,11 @@ class LastUsedDesktops {
             () => this.handleHistoryNavigation(),
         );
 
-        // Register direct desktop shortcuts for all existing desktops.
-        const desktopCount = workspace.desktops ? workspace.desktops.length : 0;
-        console.info(`LastUsedDesktops: Registering shortcuts for ${desktopCount} desktops`);
+        console.info(
+            `LastUsedDesktops: Registering shortcuts for ${workspace.desktops.length} desktops`,
+        );
 
-        for (let i = 1; i <= desktopCount; i++) {
+        for (let i = 1; i <= workspace.desktops.length; i++) {
             registerShortcut(
                 `Go to Desktop ${i}`,
                 `Navigate to virtual desktop ${i} with toggle`,
@@ -130,8 +96,6 @@ class LastUsedDesktops {
                 () => this.handleDirectDesktopNavigation(i),
             );
         }
-
-        console.info(`LastUsedDesktops: Registered ${desktopCount} direct desktop shortcuts`);
     }
 
     /**
@@ -155,7 +119,7 @@ class LastUsedDesktops {
             return;
         }
 
-        const currentDesktopId = this.getCurrentDesktopId();
+        const currentDesktopId = workspace.currentDesktop.id;
 
         // Toggle logic: if already on target desktop, go to previous.
         if (currentDesktopId === targetDesktopId) {
@@ -193,11 +157,6 @@ class LastUsedDesktops {
      * @private
      */
     addToHistory(desktopId) {
-        if (!this.isValidDesktopId(desktopId)) {
-            console.warn(`LastUsedDesktops: Invalid desktop ID: ${desktopId}`);
-            return;
-        }
-
         // Remove desktop if it already exists in history.
         const existingIndex = this.desktopHistory.indexOf(desktopId);
         if (existingIndex !== -1) {
@@ -230,21 +189,6 @@ class LastUsedDesktops {
     }
 
     /**
-     * Validate if desktop ID is valid (UUID string).
-     * @param {*} desktopId - Desktop ID to validate.
-     * @returns {boolean} True if valid.
-     * @private
-     */
-    isValidDesktopId(desktopId) {
-        return (
-            typeof desktopId === 'string' &&
-            desktopId.length > 0 &&
-            // Simple UUID pattern check (optional).
-            /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(desktopId)
-        );
-    }
-
-    /**
      * Check if this shortcut press is a continuation of previous navigation.
      * @returns {boolean} True if this is a continuation.
      * @private
@@ -262,11 +206,7 @@ class LastUsedDesktops {
      * @private
      */
     handleHistoryNavigation() {
-        const currentDesktopId = this.getCurrentDesktopId();
-        if (!this.isValidDesktopId(currentDesktopId)) {
-            console.error('LastUsedDesktops: Cannot navigate - invalid current desktop');
-            return;
-        }
+        const currentDesktopId = workspace.currentDesktop.id;
 
         // Clean up history before navigation.
         this.cleanupHistory();
@@ -292,7 +232,7 @@ class LastUsedDesktops {
             targetDesktopId = this.getDesktopFromHistory(this.historyIndex);
         }
 
-        if (this.isValidDesktopId(targetDesktopId) && this.desktopExists(targetDesktopId)) {
+        if (this.desktopExists(targetDesktopId)) {
             console.info(`LastUsedDesktops: Navigating to desktop ${targetDesktopId}`);
             this.navigateToDesktop(targetDesktopId);
             this.navigationBuffer = targetDesktopId;
@@ -334,15 +274,6 @@ class LastUsedDesktops {
     }
 
     /**
-     * Get current desktop ID safely.
-     * @returns {string|null} Current desktop ID or null.
-     * @private
-     */
-    getCurrentDesktopId() {
-        return (workspace.currentDesktop && workspace.currentDesktop.id) || null;
-    }
-
-    /**
      * Check if desktop with given ID exists.
      * @param {string} desktopId - Desktop ID to check.
      * @returns {boolean} True if desktop exists.
@@ -362,11 +293,6 @@ class LastUsedDesktops {
      * @private
      */
     navigateToDesktop(desktopId) {
-        if (!this.isValidDesktopId(desktopId)) {
-            console.error(`LastUsedDesktops: Cannot navigate to invalid desktop: ${desktopId}`);
-            return;
-        }
-
         const targetDesktop = workspace.desktops.find(
             desktop => desktop && desktop.id === desktopId,
         );
@@ -378,9 +304,7 @@ class LastUsedDesktops {
 
         console.info(`LastUsedDesktops: Navigating to desktop ${desktopId}`);
 
-        this.isNavigating = true;
         workspace.currentDesktop = targetDesktop;
-        this.isNavigating = false;
     }
 
     /**
@@ -404,7 +328,7 @@ class LastUsedDesktops {
 // Initialize the script.
 const lastUsedDesktops = new LastUsedDesktops();
 
-// Export for potential use by other scripts.
-if (typeof globalThis !== 'undefined' && globalThis.global) {
-    globalThis.global.lastUsedDesktops = lastUsedDesktops;
+// Export for tests.
+if (typeof globalThis !== 'undefined') {
+    globalThis.lastUsedDesktops = lastUsedDesktops;
 }
