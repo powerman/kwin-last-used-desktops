@@ -11,7 +11,7 @@
       }
     ],
     "Id": "kwin-last-used-desktops",
-    "Version": "0.1.0",
+    "Version": "0.2.0",
     "License": "MIT",
     "Website": "https://github.com/powerman/kwin-last-used-desktops"
   },
