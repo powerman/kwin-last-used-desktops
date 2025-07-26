@@ -18,8 +18,10 @@ jobs:
     uses: powerman/workflows/.github/workflows/release-pr.yml@v0.4.1
     with:
       version_cmd: |
-        jq '.KPlugin.Version = (env.RELEASE_PR_VERSION|ltrimstr("v"))' metadata.json > tmp.json && mv tmp.json metadata.json
-        jq '.version = (env.RELEASE_PR_VERSION|ltrimstr("v"))' package.json > tmp.json && mv tmp.json package.json
+        export VERSION_NUM="${RELEASE_PR_VERSION#v}"
+        jq '.KPlugin.Version = env.VERSION_NUM' metadata.json > tmp.json && mv tmp.json metadata.json
+        jq '.version = env.VERSION_NUM'         package.json  > tmp.json && mv tmp.json package.json
+        sed -i "s/\(SCRIPT_VERSION\s*=\s*\)'[^']*'/\1'$RELEASE_PR_VERSION'/" contents/code/main.js
     secrets:
       TOKEN: ${{ secrets.RELEASE_TOKEN }}
 

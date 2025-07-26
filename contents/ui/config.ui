@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui version="4.0">
+  <class>KWin::LastUsedDesktopsConfigForm</class>
+  <widget class="QWidget" name="KWin::LastUsedDesktopsConfigForm">
+    <property name="geometry">
+      <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>400</width>
+        <height>120</height>
+      </rect>
+    </property>
+    <property name="windowTitle">
+      <string>Last Used Virtual Desktops</string>
+    </property>
+    <layout class="QFormLayout" name="formLayout">
+      <item row="0" column="0">
+        <widget class="QLabel" name="continuationDelayLabel">
+          <property name="text">
+            <string>Continuation delay:</string>
+          </property>
+        </widget>
+      </item>
+      <item row="0" column="1">
+        <layout class="QHBoxLayout" name="continuationDelayLayout">
+          <item>
+            <widget class="QSpinBox" name="kcfg_continuationDelay">
+              <property name="suffix">
+                <string>ms</string>
+              </property>
+              <property name="minimum">
+                <number>100</number>
+              </property>
+              <property name="maximum">
+                <number>2000</number>
+              </property>
+              <property name="singleStep">
+                <number>100</number>
+              </property>
+              <property name="value">
+                <number>500</number>
+              </property>
+              <property name="toolTip">
+                <string>Delay in milliseconds to detect continuation of shortcut presses. Shorter delays make navigation more responsive but may cause accidental quick navigation.</string>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <spacer name="horizontalSpacer">
+              <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+                <size>
+                  <width>40</width>
+                  <height>20</height>
+                </size>
+              </property>
+            </spacer>
+          </item>
+        </layout>
+      </item>
+      <item row="1" column="0" colspan="2">
+        <widget class="QCheckBox" name="kcfg_debugEnabled">
+          <property name="text">
+            <string>Enable debug output</string>
+          </property>
+          <property name="toolTip">
+            <string>Enable debug messages in the console log. Useful for troubleshooting but may impact performance.</string>
+          </property>
+        </widget>
+      </item>
+      <item row="2" column="0" colspan="2">
+        <spacer name="verticalSpacer">
+          <property name="orientation">
+            <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+            <size>
+              <width>20</width>
+              <height>40</height>
+            </size>
+          </property>
+        </spacer>
+      </item>
+    </layout>
+  </widget>
+  <resources/>
+  <connections/>
+</ui>

@@ -33,6 +33,10 @@ depends = ['fmt:*']
 description = 'Format JavaScript code'
 run = 'prettier --write "**/*.js"'
 
+[tasks.'fmt:xml']
+description = 'Format XML files'
+run = 'find contents -type f \( -name "*.xml" -o -name "*.ui" \) -print0 | xargs -0 -I{} xmllint --format {} --output {}'
+
 [tasks.test]
 alias = 'default'
 description = 'Run all linters and tests'
@@ -49,6 +53,10 @@ run = 'actionlint'
 [tasks.'lint:js']
 description = 'Lint JavaScript files'
 run = 'eslint "**/*.js"'
+
+[tasks.'lint:xml']
+description = 'Lint XML and UI files'
+run = 'find contents -type f \( -name "*.xml" -o -name "*.ui" \) -print0 | xargs -0 xmllint --noout'
 
 [tasks.'test:js']
 description = 'Run JavaScript tests'

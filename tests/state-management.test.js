@@ -61,6 +61,7 @@ describe('State Management and Edge Cases', () => {
         mockRegisterShortcut = jest.fn();
 
         globalThis.registerShortcut = mockRegisterShortcut;
+        globalThis.readConfig = jest.fn((key, defaultValue) => defaultValue);
         globalThis.console = { log: jest.fn(), error: jest.fn() };
 
         jest.spyOn(Date, 'now').mockReturnValue(1000);

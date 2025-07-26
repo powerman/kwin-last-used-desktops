@@ -22,14 +22,14 @@ through history-based switching and desktop toggle functionality.
 
 ### From KDE Store (Recommended)
 
-1. Open **System Settings** → **Window Management** → **KWin Scripts**
-2. Click **Get New Scripts...**
-3. Search for "Last Used Virtual Desktops"
-4. Click **Install**
+1. Open **System Settings** → **Window Management** → **KWin Scripts**.
+2. Click **Get New Scripts...**.
+3. Search for "Last Used Virtual Desktops".
+4. Click **Install**.
 
 ### Manual Installation
 
-1. Download the latest release from [GitHub Releases](https://github.com/powerman/kwin-last-used-desktops/releases)
+1. Download the latest release from [GitHub Releases](https://github.com/powerman/kwin-last-used-desktops/releases).
 2. Install via command line:
 
     ```bash
@@ -37,9 +37,9 @@ through history-based switching and desktop toggle functionality.
     ```
 
 3. Or install via System Settings:
-    - Open **System Settings** → **Window Management** → **KWin Scripts**
-    - Click **Import KWin Script...**
-    - Select the downloaded `.kwinscript` file
+    - Open **System Settings** → **Window Management** → **KWin Scripts**.
+    - Click **Import KWin Script...**.
+    - Select the downloaded `.kwinscript` file.
 
 ### Building from Source
 
@@ -51,12 +51,27 @@ mise run install
 
 ## Configuration
 
-1. Open **System Settings** → **Window Management** → **KWin Scripts**
-2. Find "Last Used Virtual Desktops" and ensure it's **enabled**
-3. Go to **Shortcuts** → **Global Shortcuts** → **KWin**
-4. Configure keyboard shortcuts for:
-    - **Last Used Virtual Desktops**: Navigate to previously used desktop (default: `Meta+Tab`)
-    - **Navigate to virtual desktop N with toggle**: Direct desktop navigation with toggle
+### Script Settings
+
+You can configure the script behavior through the GUI:
+
+1. Open **System Settings** → **Window Management** → **KWin Scripts**.
+2. Find "Last Used Virtual Desktops" and ensure it's **enabled**.
+3. Click the **Settings** button to configure:
+    - **Continuation delay** (100-2000ms):
+      Time window for successive key presses in history navigation.
+    - **Enable debug output**:
+      Show debug messages in console (useful for troubleshooting).
+
+Settings are applied after script restart
+(switch it off, click "Apply", then switch it on, click "Apply").
+
+### Keyboard Shortcuts
+
+1. Go to **Shortcuts** → **Global Shortcuts** → **KWin**.
+2. Configure keyboard shortcuts for:
+    - **Last Used Virtual Desktops**: Navigate to previously used desktop (default: `Meta+Tab`).
+    - **Navigate to virtual desktop N with toggle**: Direct desktop navigation with toggle.
 
 ## Usage
 
@@ -65,7 +80,10 @@ mise run install
 Press your configured history shortcut (default `Meta+Tab`) to:
 
 - **First press**: Switch to the previously used desktop.
-- **Subsequent presses** (within 500ms): Walk back through desktop history.
+- **Subsequent presses** (within the configured continuation delay):
+  Walk back through desktop history.
+
+The continuation delay can be adjusted in the script settings (default: 500ms).
 
 ### Direct Desktop Navigation
 
@@ -96,7 +114,3 @@ You're on desktop 1, press "Navigate to virtual desktop 5 with toggle":
 
 This project was inspired by [Lukas Erhard's kwin-walk-through-desktops](https://github.com/luerhard/kwin-walk-through-desktops).
 Thanks to Lukas for the original idea and implementation approach!
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

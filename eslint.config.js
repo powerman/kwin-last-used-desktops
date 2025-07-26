@@ -7,6 +7,7 @@ export default [
             globals: {
                 workspace: 'readonly',
                 registerShortcut: 'readonly',
+                readConfig: 'readonly',
                 console: 'readonly',
                 Date: 'readonly',
             },

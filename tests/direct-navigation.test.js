@@ -57,6 +57,7 @@ describe('Direct Desktop Navigation', () => {
 
         globalThis.workspace = mockWorkspace;
         globalThis.registerShortcut = mockRegisterShortcut;
+        globalThis.readConfig = jest.fn((key, defaultValue) => defaultValue);
         globalThis.console = { log: jest.fn(), error: jest.fn() };
 
         // Mock Date.now for testing
