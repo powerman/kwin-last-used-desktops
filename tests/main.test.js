@@ -60,6 +60,7 @@ describe('LastUsedDesktops Integration', () => {
             { id: mockUUIDs[2], x11DesktopNumber: 3, name: 'Desktop 3' },
             { id: mockUUIDs[3], x11DesktopNumber: 4, name: 'Desktop 4' },
         ];
+
         // Remove global instance before each test
         if (globalThis.lastUsedDesktops) {
             delete globalThis.lastUsedDesktops;
@@ -82,7 +83,7 @@ describe('LastUsedDesktops Integration', () => {
             expect.any(Function),
         );
 
-        // Should register shortcuts for 20 desktops (4 in our mock)
+        // Should register shortcuts for 20 desktops (default max)
         for (let i = 1; i <= 20; i++) {
             expect(mockRegisterShortcut).toHaveBeenCalledWith(
                 `Go to Desktop ${i}`,
@@ -106,35 +107,30 @@ describe('LastUsedDesktops Integration', () => {
         expect(mockWorkspace.desktopsChanged.connect).toHaveBeenCalledWith(expect.any(Function));
     });
 
-    test('should log successful initialization with UUID', () => {
+    test('should initialize with current desktop in history', () => {
         eval(scriptContent);
 
-        expect(console.log).toHaveBeenCalledWith(
-            `LastUsedDesktops: Initialized with desktop ${mockUUIDs[0]}`,
-        );
+        const script = globalThis.lastUsedDesktops;
+        expect(script.desktopHistory).toEqual([mockUUIDs[0]]);
+        expect(script.historyIndex).toBe(0);
     });
 
-    test('should build desktop number mapping', () => {
+    test('should build desktop mappings correctly', () => {
         eval(scriptContent);
 
-        expect(console.log).toHaveBeenCalledWith(
-            'LastUsedDesktops: Building desktop number map for 4 desktops',
-        );
+        const script = globalThis.lastUsedDesktops;
 
-        // Check that desktop mappings are logged
-        expect(console.log).toHaveBeenCalledWith(`LastUsedDesktops: Desktop 1 -> ${mockUUIDs[0]}`);
-        expect(console.log).toHaveBeenCalledWith(`LastUsedDesktops: Desktop 2 -> ${mockUUIDs[1]}`);
-    });
+        // Check desktopID mapping (desktop number → UUID)
+        expect(script.desktopID[1]).toBe(mockUUIDs[0]);
+        expect(script.desktopID[2]).toBe(mockUUIDs[1]);
+        expect(script.desktopID[3]).toBe(mockUUIDs[2]);
+        expect(script.desktopID[4]).toBe(mockUUIDs[3]);
 
-    test('should validate UUID format', () => {
-        eval(scriptContent);
-
-        // Valid UUIDs should be accepted
-        expect(
-            mockUUIDs.every(uuid =>
-                /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uuid),
-            ),
-        ).toBe(true);
+        // Check desktopNum mapping (UUID → desktop number)
+        expect(script.desktopNum[mockUUIDs[0]]).toBe(1);
+        expect(script.desktopNum[mockUUIDs[1]]).toBe(2);
+        expect(script.desktopNum[mockUUIDs[2]]).toBe(3);
+        expect(script.desktopNum[mockUUIDs[3]]).toBe(4);
     });
 
     test('should export lastUsedDesktops globally', () => {
@@ -146,13 +142,22 @@ describe('LastUsedDesktops Integration', () => {
         eval(scriptContent);
 
         expect(globalThis.lastUsedDesktops).toBeDefined();
+        expect(globalThis.lastUsedDesktops).toBeInstanceOf(Object);
     });
 
-    test('should validate automatic desktop detection', () => {
+    test('should handle desktops without x11DesktopNumber', () => {
+        // Test with missing x11DesktopNumber
+        mockWorkspace.desktops[1].x11DesktopNumber = undefined;
+        mockWorkspace.desktops[2].x11DesktopNumber = null;
+
         eval(scriptContent);
 
-        expect(console.log).toHaveBeenCalledWith(
-            'LastUsedDesktops: Registering shortcuts for 4 desktops',
-        );
+        const script = globalThis.lastUsedDesktops;
+
+        // Should use array index + 1 as fallback
+        expect(script.desktopID[1]).toBe(mockUUIDs[0]); // First desktop
+        expect(script.desktopID[2]).toBe(mockUUIDs[1]); // Second desktop (index 1 + 1)
+        expect(script.desktopID[3]).toBe(mockUUIDs[2]); // Third desktop (index 2 + 1)
+        expect(script.desktopID[4]).toBe(mockUUIDs[3]); // Fourth desktop
     });
 });
