@@ -2,13 +2,28 @@
 version = "1.7.7"
 backend = "aqua:rhysd/actionlint"
 
+[tools.actionlint.platforms.linux-x64]
+checksum = "sha256:023070a287cd8cccd71515fedc843f1985bf96c436b7effaecce67290e7e0757"
+size = 2080472
+url = "https://github.com/rhysd/actionlint/releases/download/v1.7.7/actionlint_1.7.7_linux_amd64.tar.gz"
+
 [tools.gh]
-version = "2.75.0"
+version = "2.76.1"
 backend = "aqua:cli/cli"
+
+[tools.gh.platforms.linux-x64]
+checksum = "sha256:18367ca38b4462889ae38fba6a18c53a4c2818b6af309bbe53d0810bb06036e9"
+size = 17878599
+url = "https://github.com/cli/cli/releases/download/v2.76.1/gh_2.76.1_linux_amd64.tar.gz"
 
 [tools.git-cliff]
 version = "2.9.1"
 backend = "aqua:orhun/git-cliff"
+
+[tools.git-cliff.platforms.linux-x64]
+checksum = "sha512:edbe32578c2160cdf8e93b7b00eefc11bcbe5cf17ac6fc77e7b2d29a3532bdb7a33825d8c364a1237956c4311b8bab2b9c8c44cdda700e276b7cde32bb791771"
+size = 7091093
+url = "https://github.com/orhun/git-cliff/releases/download/v2.9.1/git-cliff-2.9.1-x86_64-unknown-linux-musl.tar.gz"
 
 [tools.jq]
 version = "1.8.1"
@@ -24,7 +39,7 @@ version = "22.17.1"
 backend = "core:node"
 
 [tools."npm:eslint"]
-version = "9.31.0"
+version = "9.32.0"
 backend = "npm:eslint"
 
 [tools."npm:jest"]
