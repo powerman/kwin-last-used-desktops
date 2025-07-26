@@ -78,10 +78,8 @@ describe('Real Toggle Bug - Exact Reproduction', () => {
         global.workspace = mockWorkspace;
         global.registerShortcut = mockRegisterShortcut;
         global.console = {
-            info: jest.fn(),
             log: jest.fn(),
             error: jest.fn(),
-            warn: jest.fn(),
         };
 
         lastUsedDesktops = loadScript();

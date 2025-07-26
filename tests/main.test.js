@@ -33,10 +33,8 @@ const mockRegisterShortcut = jest.fn();
 global.workspace = mockWorkspace;
 global.registerShortcut = mockRegisterShortcut;
 global.console = {
-    info: jest.fn(),
     log: jest.fn(),
     error: jest.fn(),
-    warn: jest.fn(),
 };
 
 // Import the main script after setting up mocks
@@ -107,7 +105,7 @@ describe('LastUsedDesktops Integration', () => {
     test('should log successful initialization with UUID', () => {
         eval(scriptContent);
 
-        expect(console.info).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             `LastUsedDesktops: Initialized with desktop ${mockUUIDs[0]}`,
         );
     });
@@ -115,13 +113,13 @@ describe('LastUsedDesktops Integration', () => {
     test('should build desktop number mapping', () => {
         eval(scriptContent);
 
-        expect(console.info).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             'LastUsedDesktops: Building desktop number map for 4 desktops',
         );
 
         // Check that desktop mappings are logged
-        expect(console.info).toHaveBeenCalledWith(`LastUsedDesktops: Desktop 1 -> ${mockUUIDs[0]}`);
-        expect(console.info).toHaveBeenCalledWith(`LastUsedDesktops: Desktop 2 -> ${mockUUIDs[1]}`);
+        expect(console.log).toHaveBeenCalledWith(`LastUsedDesktops: Desktop 1 -> ${mockUUIDs[0]}`);
+        expect(console.log).toHaveBeenCalledWith(`LastUsedDesktops: Desktop 2 -> ${mockUUIDs[1]}`);
     });
 
     test('should validate UUID format', () => {
@@ -149,7 +147,7 @@ describe('LastUsedDesktops Integration', () => {
     test('should validate automatic desktop detection', () => {
         eval(scriptContent);
 
-        expect(console.info).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             'LastUsedDesktops: Registering shortcuts for 4 desktops',
         );
     });

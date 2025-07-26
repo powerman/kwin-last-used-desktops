@@ -60,10 +60,8 @@ describe('addToHistory Duplicate Handling', () => {
         global.workspace = mockWorkspace;
         global.registerShortcut = jest.fn();
         global.console = {
-            info: jest.fn(),
             log: jest.fn(),
             error: jest.fn(),
-            warn: jest.fn(),
         };
 
         lastUsedDesktops = loadScript();

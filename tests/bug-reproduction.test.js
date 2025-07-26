@@ -78,10 +78,8 @@ describe('Bug Reproduction Tests', () => {
         global.workspace = mockWorkspace;
         global.registerShortcut = mockRegisterShortcut;
         global.console = {
-            info: jest.fn(),
             log: jest.fn(),
             error: jest.fn(),
-            warn: jest.fn(),
         };
 
         // Mock Date.now for testing continuation logic

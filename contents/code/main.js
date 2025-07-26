@@ -35,7 +35,17 @@ class LastUsedDesktops {
         this.connectSignals();
         this.registerShortcuts();
 
-        console.info(`LastUsedDesktops: Initialized with desktop ${this.desktopHistory[0]}`);
+        this.log(`Initialized with desktop ${this.desktopHistory[0]}`);
+    }
+
+    /**
+     * Logs with script name prefix.
+     * @param {string} msg - Log message.
+     * @param {...any} args - Additional values.
+     * @private
+     */
+    log(msg, ...args) {
+        console.log(`LastUsedDesktops: ${msg}`, ...args);
     }
 
     /**
@@ -43,16 +53,14 @@ class LastUsedDesktops {
      * @private
      */
     buildDesktopNumberMap() {
-        console.info(
-            `LastUsedDesktops: Building desktop number map for ${workspace.desktops.length} desktops`,
-        );
+        this.log(`Building desktop number map for ${workspace.desktops.length} desktops`);
 
         this.desktopNumberMap = {};
         for (let i = 0; i < workspace.desktops.length; i++) {
             const desktop = workspace.desktops[i];
             const desktopNumber = desktop.x11DesktopNumber || i + 1;
             this.desktopNumberMap[desktopNumber] = desktop.id;
-            console.info(`LastUsedDesktops: Desktop ${desktopNumber} -> ${desktop.id}`);
+            this.log(`Desktop ${desktopNumber} -> ${desktop.id}`);
         }
     }
 
@@ -66,7 +74,7 @@ class LastUsedDesktops {
         });
 
         workspace.desktopsChanged.connect(() => {
-            console.info('LastUsedDesktops: Desktops changed, rebuilding map');
+            this.log('Desktops changed, rebuilding map');
             this.buildDesktopNumberMap();
             this.cleanupHistory();
         });
@@ -84,9 +92,7 @@ class LastUsedDesktops {
             () => this.handleHistoryNavigation(),
         );
 
-        console.info(
-            `LastUsedDesktops: Registering shortcuts for ${workspace.desktops.length} desktops`,
-        );
+        this.log(`Registering shortcuts for ${workspace.desktops.length} desktops`);
 
         for (let i = 1; i <= Math.max(20, workspace.desktops.length); i++) {
             registerShortcut(
@@ -107,14 +113,12 @@ class LastUsedDesktops {
         const targetDesktopId = this.desktopNumberMap[desktopNumber];
 
         if (!targetDesktopId) {
-            console.warn(`LastUsedDesktops: Desktop ${desktopNumber} not found`);
+            this.log(`Desktop ${desktopNumber} not found`);
             return;
         }
 
         if (!this.desktopExists(targetDesktopId)) {
-            console.warn(
-                `LastUsedDesktops: Desktop ${desktopNumber} (${targetDesktopId}) no longer exists`,
-            );
+            this.log(`Desktop ${desktopNumber} (${targetDesktopId}) no longer exists`);
             this.buildDesktopNumberMap(); // Rebuild map.
             return;
         }
@@ -123,9 +127,7 @@ class LastUsedDesktops {
 
         // Toggle logic: if already on target desktop, go to previous.
         if (currentDesktopId === targetDesktopId) {
-            console.info(
-                `LastUsedDesktops: Already on desktop ${desktopNumber}, switching to previous`,
-            );
+            this.log(`Already on desktop ${desktopNumber}, switching to previous`);
 
             // For toggle, we want to go to the most recent desktop that's not the current one.
             // Don't use handleHistoryNavigation() as it has complex continuation logic.
@@ -143,10 +145,10 @@ class LastUsedDesktops {
             if (previousDesktopId) {
                 this.navigateToDesktop(previousDesktopId);
             } else {
-                console.warn('LastUsedDesktops: No previous desktop available for toggle');
+                this.log('No previous desktop available for toggle');
             }
         } else {
-            console.info(`LastUsedDesktops: Navigating to desktop ${desktopNumber}`);
+            this.log(`Navigating to desktop ${desktopNumber}`);
             this.navigateToDesktop(targetDesktopId);
         }
     }
@@ -166,8 +168,8 @@ class LastUsedDesktops {
         // Add to end of history (most recent).
         this.desktopHistory.push(desktopId);
 
-        console.info(
-            `LastUsedDesktops: Added desktop ${desktopId} to history. Current history length: ${this.desktopHistory.length}`,
+        this.log(
+            `Added desktop ${desktopId} to history. Current history length: ${this.desktopHistory.length}`,
         );
     }
 
@@ -182,8 +184,8 @@ class LastUsedDesktops {
         );
 
         if (this.desktopHistory.length < originalLength) {
-            console.info(
-                `LastUsedDesktops: Cleaned up history, removed ${originalLength - this.desktopHistory.length} invalid desktops`,
+            this.log(
+                `Cleaned up history, removed ${originalLength - this.desktopHistory.length} invalid desktops`,
             );
         }
     }
@@ -212,7 +214,7 @@ class LastUsedDesktops {
         this.cleanupHistory();
 
         const isContinuing = this.isContinuation();
-        console.info(`LastUsedDesktops: Navigation triggered (continuing: ${isContinuing})`);
+        this.log(`Navigation triggered (continuing: ${isContinuing})`);
 
         let targetDesktopId;
 
@@ -233,11 +235,11 @@ class LastUsedDesktops {
         }
 
         if (this.desktopExists(targetDesktopId)) {
-            console.info(`LastUsedDesktops: Navigating to desktop ${targetDesktopId}`);
+            this.log(`Navigating to desktop ${targetDesktopId}`);
             this.navigateToDesktop(targetDesktopId);
             this.navigationBuffer = targetDesktopId;
         } else {
-            console.warn(`LastUsedDesktops: Cannot navigate to desktop ${targetDesktopId}`);
+            this.log(`Cannot navigate to desktop ${targetDesktopId}`);
         }
     }
 
@@ -298,11 +300,11 @@ class LastUsedDesktops {
         );
 
         if (!targetDesktop) {
-            console.error(`LastUsedDesktops: Desktop ${desktopId} not found`);
+            this.log(`Desktop ${desktopId} not found`);
             return;
         }
 
-        console.info(`LastUsedDesktops: Navigating to desktop ${desktopId}`);
+        this.log(`Navigating to desktop ${desktopId}`);
 
         workspace.currentDesktop = targetDesktop;
     }

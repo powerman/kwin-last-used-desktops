@@ -62,10 +62,8 @@ describe('Potential Bug Exposure Tests', () => {
 
         mockRegisterShortcut = jest.fn();
         mockConsole = {
-            info: jest.fn(),
             log: jest.fn(),
             error: jest.fn(),
-            warn: jest.fn(),
         };
 
         global.registerShortcut = mockRegisterShortcut;
@@ -88,7 +86,7 @@ describe('Potential Bug Exposure Tests', () => {
             }).not.toThrow();
 
             // Should log error about desktop not found
-            expect(mockConsole.error).toHaveBeenCalledWith(
+            expect(mockConsole.log).toHaveBeenCalledWith(
                 `LastUsedDesktops: Desktop ${invalidDesktopId} not found`,
             );
 
@@ -203,7 +201,7 @@ describe('Potential Bug Exposure Tests', () => {
             }).not.toThrow();
 
             // Should warn about no previous desktop available
-            expect(mockConsole.warn).toHaveBeenCalledWith(
+            expect(mockConsole.log).toHaveBeenCalledWith(
                 'LastUsedDesktops: No previous desktop available for toggle',
             );
         });

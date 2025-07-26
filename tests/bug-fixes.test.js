@@ -70,10 +70,8 @@ describe('Bug Fixes Validation', () => {
         global.workspace = mockWorkspace;
         global.registerShortcut = mockRegisterShortcut;
         global.console = {
-            info: jest.fn(),
             log: jest.fn(),
             error: jest.fn(),
-            warn: jest.fn(),
         };
 
         jest.spyOn(Date, 'now').mockReturnValue(1000);
