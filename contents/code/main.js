@@ -69,15 +69,8 @@ class LastUsedDesktops {
      * @private
      */
     connectSignals() {
-        workspace.currentDesktopChanged.connect(desktop => {
-            this.addToHistory(desktop.id);
-        });
-
-        workspace.desktopsChanged.connect(() => {
-            this.log('Desktops changed, rebuilding map');
-            this.buildDesktopNumberMap();
-            this.cleanupHistory();
-        });
+        workspace.currentDesktopChanged.connect(this.handleCurrentDesktopChanged.bind(this));
+        workspace.desktopsChanged.connect(this.handleDesktopsChanged.bind(this));
     }
 
     /**
@@ -102,6 +95,23 @@ class LastUsedDesktops {
                 () => this.handleDirectDesktopNavigation(i),
             );
         }
+    }
+
+    /**
+     * Handle workspace.currentDesktopChanged signal.
+     * @param {object} desktop
+     */
+    handleCurrentDesktopChanged(desktop) {
+        this.addToHistory(desktop.id);
+    }
+
+    /**
+     * Handle workspace.desktopsChanged signal.
+     */
+    handleDesktopsChanged() {
+        this.log('Desktops changed, rebuilding map');
+        this.buildDesktopNumberMap();
+        this.cleanupHistory();
     }
 
     /**
