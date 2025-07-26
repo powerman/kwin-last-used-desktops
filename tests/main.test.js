@@ -30,9 +30,9 @@ const mockWorkspace = {
 const mockRegisterShortcut = jest.fn();
 
 // Set up global mocks
-global.workspace = mockWorkspace;
-global.registerShortcut = mockRegisterShortcut;
-global.console = {
+globalThis.workspace = mockWorkspace;
+globalThis.registerShortcut = mockRegisterShortcut;
+globalThis.console = {
     log: jest.fn(),
     error: jest.fn(),
 };
@@ -60,6 +60,10 @@ describe('LastUsedDesktops Integration', () => {
             { id: mockUUIDs[2], x11DesktopNumber: 3, name: 'Desktop 3' },
             { id: mockUUIDs[3], x11DesktopNumber: 4, name: 'Desktop 4' },
         ];
+        // Remove global instance before each test
+        if (globalThis.lastUsedDesktops) {
+            delete globalThis.lastUsedDesktops;
+        }
     });
 
     test('should execute script without errors', () => {
@@ -135,13 +139,13 @@ describe('LastUsedDesktops Integration', () => {
 
     test('should export lastUsedDesktops globally', () => {
         // Clear any existing global
-        if (global.lastUsedDesktops) {
-            delete global.lastUsedDesktops;
+        if (globalThis.lastUsedDesktops) {
+            delete globalThis.lastUsedDesktops;
         }
 
         eval(scriptContent);
 
-        expect(global.lastUsedDesktops).toBeDefined();
+        expect(globalThis.lastUsedDesktops).toBeDefined();
     });
 
     test('should validate automatic desktop detection', () => {

@@ -99,7 +99,8 @@ class LastUsedDesktops {
 
     /**
      * Handle workspace.currentDesktopChanged signal.
-     * @param {object} desktop
+     * @param {KWin.VirtualDesktop} desktop
+     * @private
      */
     handleCurrentDesktopChanged(desktop) {
         this.addToHistory(desktop.id);
@@ -107,6 +108,7 @@ class LastUsedDesktops {
 
     /**
      * Handle workspace.desktopsChanged signal.
+     * @private
      */
     handleDesktopsChanged() {
         this.log('Desktops changed, rebuilding map');
@@ -244,7 +246,7 @@ class LastUsedDesktops {
             targetDesktopId = this.getDesktopFromHistory(this.historyIndex);
         }
 
-        if (this.desktopExists(targetDesktopId)) {
+        if (typeof targetDesktopId === 'string' && this.desktopExists(targetDesktopId)) {
             this.log(`Navigating to desktop ${targetDesktopId}`);
             this.navigateToDesktop(targetDesktopId);
             this.navigationBuffer = targetDesktopId;
@@ -338,9 +340,8 @@ class LastUsedDesktops {
 }
 
 // Initialize the script.
-const lastUsedDesktops = new LastUsedDesktops();
-
-// Export for tests.
+const script = new LastUsedDesktops();
 if (typeof globalThis !== 'undefined') {
-    globalThis.lastUsedDesktops = lastUsedDesktops;
+    // @ts-ignore - Node.js/Jest export for tests
+    globalThis.lastUsedDesktops = script;
 }
