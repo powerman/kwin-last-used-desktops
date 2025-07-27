@@ -29,6 +29,6 @@ jobs:
         with:
           packages: libxml2-utils
 
-      - uses: jdx/mise-action@v2.4.2
+      - uses: jdx/mise-action@v2
 
       - run: mise run test

@@ -38,7 +38,7 @@ jobs:
         with:
           token: ${{ env.GITHUB_TOKEN }}
 
-      - uses: jdx/mise-action@v2.4.2
+      - uses: jdx/mise-action@v2
 
       - run: mise run build
 
