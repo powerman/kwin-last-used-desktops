@@ -28,10 +28,12 @@ const mockWorkspace = {
 };
 
 const mockRegisterShortcut = jest.fn();
+const mockReadConfig = jest.fn((key, defaultValue) => defaultValue);
 
 // Set up global mocks
 globalThis.workspace = mockWorkspace;
 globalThis.registerShortcut = mockRegisterShortcut;
+globalThis.readConfig = mockReadConfig;
 globalThis.console = {
     log: jest.fn(),
     error: jest.fn(),
