@@ -31,12 +31,12 @@ class LastUsedDesktops {
         this.targetDesktopId = null;
 
         /** @type {number} Delay in ms to detect continuation of shortcut presses. */
-        this.continuationDelay = this.readConfig('continuationDelay', 500);
+        this.continuationDelay = readConfig('continuationDelay', 500);
         /** @type {number} Timestamp of last shortcut trigger. */
         this.lastTriggerTime = 0;
 
         /** @type {boolean} */
-        this.debugEnabled = this.readConfig('debugEnabled', false);
+        this.debugEnabled = readConfig('debugEnabled', false);
 
         this.debug(`Starting ${SCRIPT_VERSION}`);
 
@@ -44,17 +44,6 @@ class LastUsedDesktops {
 
         this.connectSignals();
         this.registerShortcuts();
-    }
-
-    /**
-     * Read configuration value.
-     * @param {string} key - Configuration key.
-     * @param {any} defaultValue - Default value if key is not found.
-     * @returns {any} Configuration value.
-     * @private
-     */
-    readConfig(key, defaultValue) {
-        return readConfig(key, defaultValue);
     }
 
     /**
