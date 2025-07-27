@@ -197,8 +197,8 @@ describe('Direct Desktop Navigation', () => {
             expect(mockWorkspace.currentDesktop.id).toBe(testUUIDs[1]); // Desktop 2
 
             // The toggle should have used history navigation internally
-            // which sets lastTriggerTime to current time
-            expect(script.lastTriggerTime).toBe(1000); // Current mocked time
+            // which sets lastPrevUsedShortcutTime to current time
+            expect(script.lastPrevUsedShortcutTime).toBe(1000); // Current mocked time
         });
     });
 

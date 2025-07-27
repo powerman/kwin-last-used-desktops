@@ -115,7 +115,7 @@ describe('State Management and Edge Cases', () => {
                 mockWorkspace.currentDesktopChanged.connect.mock.calls[0][0];
 
             // Set navigation target
-            script.targetDesktopId = testUUIDs[1];
+            script.candidateDesktopId = testUUIDs[1];
             const initialHistoryLength = script.desktopHistory.length;
 
             // Simulate desktop change to target
@@ -146,29 +146,29 @@ describe('State Management and Edge Cases', () => {
         });
 
         test('should clear target desktop after commit', () => {
-            script.targetDesktopId = testUUIDs[1];
+            script.candidateDesktopId = testUUIDs[1];
 
-            script.commitTargetDesktopId();
+            script.finalizeContinuing();
 
-            expect(script.targetDesktopId).toBe(null);
+            expect(script.candidateDesktopId).toBe(null);
         });
 
         test('should add target desktop to history on commit', () => {
             const initialHistoryLength = script.desktopHistory.length;
-            script.targetDesktopId = testUUIDs[1];
+            script.candidateDesktopId = testUUIDs[1];
 
-            script.commitTargetDesktopId();
+            script.finalizeContinuing();
 
             expect(script.desktopHistory.length).toBe(initialHistoryLength + 1);
             expect(script.desktopHistory[script.desktopHistory.length - 1]).toBe(testUUIDs[1]);
         });
 
         test('should handle commit with null target', () => {
-            script.targetDesktopId = null;
+            script.candidateDesktopId = null;
             const initialHistoryLength = script.desktopHistory.length;
 
             expect(() => {
-                script.commitTargetDesktopId();
+                script.finalizeContinuing();
             }).not.toThrow();
 
             expect(script.desktopHistory.length).toBe(initialHistoryLength);
@@ -212,8 +212,8 @@ describe('State Management and Edge Cases', () => {
 
             // History should be reset to current desktop
             expect(script.desktopHistory).toEqual([mockWorkspace.currentDesktop.id]);
-            expect(script.historyIndex).toBe(0);
-            expect(script.targetDesktopId).toBe(null);
+            expect(script.desktopHistoryIdx).toBe(0);
+            expect(script.candidateDesktopId).toBe(null);
         });
     });
 
@@ -295,24 +295,24 @@ describe('State Management and Edge Cases', () => {
         test('should handle history index bounds', () => {
             // Build minimal history
             script.desktopHistory = [testUUIDs[0]];
-            script.historyIndex = 0;
+            script.desktopHistoryIdx = 0;
 
             // Try to go beyond bounds
-            script.historyIndex = -1;
-            expect(script.historyIndex).toBe(-1); // Should allow negative (handled in navigation)
+            script.desktopHistoryIdx = -1;
+            expect(script.desktopHistoryIdx).toBe(-1); // Should allow negative (handled in navigation)
 
-            script.historyIndex = 5; // Beyond history length
-            expect(script.historyIndex).toBe(5); // Should allow (bounds checked in navigation)
+            script.desktopHistoryIdx = 5; // Beyond history length
+            expect(script.desktopHistoryIdx).toBe(5); // Should allow (bounds checked in navigation)
         });
 
         test('should reset index properly', () => {
-            script.historyIndex = 5;
-            script.targetDesktopId = testUUIDs[1];
+            script.desktopHistoryIdx = 5;
+            script.candidateDesktopId = testUUIDs[1];
 
             script.resetHistory();
 
-            expect(script.historyIndex).toBe(0);
-            expect(script.targetDesktopId).toBe(null);
+            expect(script.desktopHistoryIdx).toBe(0);
+            expect(script.candidateDesktopId).toBe(null);
             expect(script.desktopHistory).toEqual([mockWorkspace.currentDesktop.id]);
         });
     });

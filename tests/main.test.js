@@ -114,7 +114,7 @@ describe('LastUsedDesktops Integration', () => {
 
         const script = globalThis.lastUsedDesktops;
         expect(script.desktopHistory).toEqual([mockUUIDs[0]]);
-        expect(script.historyIndex).toBe(0);
+        expect(script.desktopHistoryIdx).toBe(0);
     });
 
     test('should build desktop mappings correctly', () => {

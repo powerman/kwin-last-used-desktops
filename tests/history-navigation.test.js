@@ -78,7 +78,7 @@ describe('History Navigation', () => {
     describe('History Building', () => {
         test('should start with current desktop in history', () => {
             expect(script.desktopHistory).toEqual([testUUIDs[0]]);
-            expect(script.historyIndex).toBe(0);
+            expect(script.desktopHistoryIdx).toBe(0);
         });
 
         test('should add new desktops to history in order', () => {
@@ -189,9 +189,9 @@ describe('History Navigation', () => {
             Date.now.mockReturnValue(5000); // 1000ms later, beyond 500ms delay
             historyNavigationHandler();
 
-            // After first navigation commitTargetDesktopId() was called
+            // After first navigation finalizeContinuing() was called
             // History is now: [Desktop 1, Desktop 2, Desktop 3, Desktop 2 (from navigation)]
-            // Second navigation: historyIndex = length-2 = 4-2 = 2, so history[2] = Desktop 3
+            // Second navigation: desktopHistoryIdx = length-2 = 4-2 = 2, so history[2] = Desktop 3
             expect(mockWorkspace.currentDesktop.id).toBe(testUUIDs[2]); // Desktop 3, not Desktop 2
         });
     });
@@ -206,7 +206,7 @@ describe('History Navigation', () => {
             historyNavigationHandler();
 
             // Should have set target desktop
-            expect(script.targetDesktopId).toBe(testUUIDs[0]);
+            expect(script.candidateDesktopId).toBe(testUUIDs[0]);
         });
 
         test('should commit navigation to history properly', () => {
@@ -216,13 +216,13 @@ describe('History Navigation', () => {
 
             const historyBefore = [...script.desktopHistory];
 
-            // Start navigation (sets targetDesktopId AND calls commitTargetDesktopId first)
+            // Start navigation (sets candidateDesktopId AND calls finalizeContinuing first)
             historyNavigationHandler();
 
-            // historyNavigation already called commitTargetDesktopId() if targetDesktopId was not null
+            // historyNavigation already called finalizeContinuing() if candidateDesktopId was not null
             // So history length should already be increased by 1
             expect(script.desktopHistory.length).toBe(historyBefore.length);
-            expect(script.targetDesktopId).not.toBe(null); // New target was set
+            expect(script.candidateDesktopId).not.toBe(null); // New target was set
         });
 
         test('should not record intermediate navigation steps', () => {
@@ -269,7 +269,7 @@ describe('History Navigation', () => {
 
             // Should reset to current desktop only
             expect(script.desktopHistory).toEqual([mockWorkspace.currentDesktop.id]);
-            expect(script.historyIndex).toBe(0);
+            expect(script.desktopHistoryIdx).toBe(0);
         });
     });
 });
