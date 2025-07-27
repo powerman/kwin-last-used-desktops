@@ -123,16 +123,16 @@ describe('LastUsedDesktops Integration', () => {
         const script = globalThis.lastUsedDesktops;
 
         // Check desktopID mapping (desktop number → UUID)
-        expect(script.desktopID[1]).toBe(mockUUIDs[0]);
-        expect(script.desktopID[2]).toBe(mockUUIDs[1]);
-        expect(script.desktopID[3]).toBe(mockUUIDs[2]);
-        expect(script.desktopID[4]).toBe(mockUUIDs[3]);
+        expect(script.map.desktopID[1]).toBe(mockUUIDs[0]);
+        expect(script.map.desktopID[2]).toBe(mockUUIDs[1]);
+        expect(script.map.desktopID[3]).toBe(mockUUIDs[2]);
+        expect(script.map.desktopID[4]).toBe(mockUUIDs[3]);
 
         // Check desktopNum mapping (UUID → desktop number)
-        expect(script.desktopNum[mockUUIDs[0]]).toBe(1);
-        expect(script.desktopNum[mockUUIDs[1]]).toBe(2);
-        expect(script.desktopNum[mockUUIDs[2]]).toBe(3);
-        expect(script.desktopNum[mockUUIDs[3]]).toBe(4);
+        expect(script.map.desktopNum[mockUUIDs[0]]).toBe(1);
+        expect(script.map.desktopNum[mockUUIDs[1]]).toBe(2);
+        expect(script.map.desktopNum[mockUUIDs[2]]).toBe(3);
+        expect(script.map.desktopNum[mockUUIDs[3]]).toBe(4);
     });
 
     test('should export lastUsedDesktops globally', () => {
@@ -157,9 +157,9 @@ describe('LastUsedDesktops Integration', () => {
         const script = globalThis.lastUsedDesktops;
 
         // Should use array index + 1 as fallback
-        expect(script.desktopID[1]).toBe(mockUUIDs[0]); // First desktop
-        expect(script.desktopID[2]).toBe(mockUUIDs[1]); // Second desktop (index 1 + 1)
-        expect(script.desktopID[3]).toBe(mockUUIDs[2]); // Third desktop (index 2 + 1)
-        expect(script.desktopID[4]).toBe(mockUUIDs[3]); // Fourth desktop
+        expect(script.map.desktopID[1]).toBe(mockUUIDs[0]); // First desktop
+        expect(script.map.desktopID[2]).toBe(mockUUIDs[1]); // Second desktop (index 1 + 1)
+        expect(script.map.desktopID[3]).toBe(mockUUIDs[2]); // Third desktop (index 2 + 1)
+        expect(script.map.desktopID[4]).toBe(mockUUIDs[3]); // Fourth desktop
     });
 });

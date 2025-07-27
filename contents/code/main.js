@@ -15,6 +15,59 @@ function debug(msg, ...args) {
 debug.enabled = readConfig('debugEnabled', false);
 
 /**
+ * DesktopMap - manages mapping between desktop numbers and IDs.
+ * @class DesktopMap
+ */
+class DesktopMap {
+    constructor() {
+        /** @type {Object<number, string>} Map of desktop number to ID. */
+        this.desktopID = {};
+        /** @type {Object<string, number>} Map of desktop ID to number. */
+        this.desktopNum = {};
+    }
+
+    /**
+     * Build mappings between X11 desktop numbers and desktop IDs (UUIDs).
+     * @param {KWin.VirtualDesktop[]} desktops
+     */
+    build(desktops) {
+        debug(`Building desktop map for ${desktops.length} desktops`);
+        this.desktopID = {};
+        this.desktopNum = {};
+        for (let i = 0; i < desktops.length; i++) {
+            const desktop = desktops[i];
+            const desktopNum = desktop.x11DesktopNumber || i + 1;
+            this.desktopID[desktopNum] = desktop.id;
+            this.desktopNum[desktop.id] = desktopNum;
+            debug(`Desktop added: number ${desktopNum}, id ${desktop.id}`);
+        }
+    }
+
+    /**
+     * Returns desktop ID by number.
+     * @param {number} num
+     * @returns {string|undefined}
+     */
+    id(num) {
+        return this.desktopID[num];
+    }
+
+    /**
+     * Returns a human-readable description for a desktop ID.
+     * @param {string} id - Desktop ID (UUID).
+     * @returns {string} Description in the format "desktop {number}" or "desktop {id}".
+     */
+    desc(id) {
+        const desktopNum = this.desktopNum[id];
+        if (desktopNum) {
+            return `desktop ${desktopNum}`;
+        } else {
+            return `desktop ${id}`;
+        }
+    }
+}
+
+/**
  * Last Used Virtual Desktops - KWin Script.
  *
  * Provides intelligent virtual desktop navigation through:
@@ -24,16 +77,13 @@ debug.enabled = readConfig('debugEnabled', false);
  *
  * @class LastUsedDesktops
  */
-
 class LastUsedDesktops {
     /**
      * Initialize the desktop navigation system.
      */
     constructor() {
-        /** @type {Object<number, string>} Map of desktop number to ID. */
-        this.desktopID = {};
-        /** @type {Object<string, number>} Map of desktop ID to number. */
-        this.desktopNum = {};
+        /** @type {DesktopMap} */
+        this.map = new DesktopMap();
 
         /** @type {string[]} History of desktop IDs in usage order (current is the last). */
         this.desktopHistory = [workspace.currentDesktop.id];
@@ -54,26 +104,11 @@ class LastUsedDesktops {
     }
 
     /**
-     * Returns a human-readable description for a desktop ID.
-     * @param {string} id - Desktop ID (UUID).
-     * @returns {string} Description in the format "desktop {number}" or "desktop {id}".
-     * @private
-     */
-    desc(id) {
-        const desktopNum = this.desktopNum[id];
-        if (desktopNum) {
-            return `desktop ${desktopNum}`;
-        } else {
-            return `desktop ${id}`;
-        }
-    }
-
-    /**
      * Initialize desktops.
      * @private
      */
     initDesktops() {
-        this.buildDesktopMap();
+        this.map.build(workspace.desktops);
         this.resetHistory();
     }
 
@@ -84,24 +119,7 @@ class LastUsedDesktops {
     resetHistory() {
         this.desktopHistory = [workspace.currentDesktop.id];
         this.candidateIdx = null;
-        debug(`History reset to [${this.desc(this.desktopHistory[0])}]`);
-    }
-
-    /**
-     * Build mappings between X11 desktop numbers and desktop IDs (UUIDs).
-     * @private
-     */
-    buildDesktopMap() {
-        debug(`Building desktop map for ${workspace.desktops.length} desktops`);
-        this.desktopID = {};
-        this.desktopNum = {};
-        for (let i = 0; i < workspace.desktops.length; i++) {
-            const desktop = workspace.desktops[i];
-            const desktopNum = desktop.x11DesktopNumber || i + 1; // Is this fallback for Wayland?
-            this.desktopID[desktopNum] = desktop.id;
-            this.desktopNum[desktop.id] = desktopNum;
-            debug(`Desktop added: number ${desktopNum}, id ${desktop.id}`);
-        }
+        debug(`History reset to [${this.map.desc(this.desktopHistory[0])}]`);
     }
 
     /**
@@ -151,8 +169,8 @@ class LastUsedDesktops {
      * @private
      */
     onCurrentDesktopChanged(prevDesktop) {
-        const prev = this.desc(prevDesktop.id);
-        const current = this.desc(workspace.currentDesktop.id);
+        const prev = this.map.desc(prevDesktop.id);
+        const current = this.map.desc(workspace.currentDesktop.id);
         debug(`Signal: Current desktop changed from ${prev} to ${current}`);
         this.handleCurrentDesktopChanged();
     }
@@ -191,7 +209,7 @@ class LastUsedDesktops {
             this.finalizeContinuing();
             this.addToHistory(id);
         } else {
-            debug(`Skipping adding ${this.desc(id)} to history (continuing navigation)`);
+            debug(`Skipping adding ${this.map.desc(id)} to history (continuing navigation)`);
         }
     }
 
@@ -223,14 +241,14 @@ class LastUsedDesktops {
      * @private
      */
     toggleDesktop(desktopNum) {
-        const targetId = this.desktopID[desktopNum];
-        const currentId = workspace.currentDesktop.id;
+        const targetID = this.map.id(desktopNum);
+        const currentID = workspace.currentDesktop.id;
 
         this.finalizeContinuing();
-        if (!targetId) {
+        if (!targetID) {
             debug(`Desktop ${desktopNum} not found`);
-        } else if (currentId !== targetId) {
-            this.navigateToDesktop(targetId);
+        } else if (currentID !== targetID) {
+            this.navigateToDesktop(targetID);
         } else {
             debug(`Already on desktop ${desktopNum}; switching to previous used desktop`);
             this.switchToPrevUsedDesktop(false);
@@ -262,7 +280,7 @@ class LastUsedDesktops {
         }
 
         this.desktopHistory.push(id);
-        debug(`Desktop ${this.desc(id)} added to history (size=${this.desktopHistory.length})`);
+        debug(`Desktop ${this.map.desc(id)} added to history (size=${this.desktopHistory.length})`);
     }
 
     /**
@@ -273,10 +291,10 @@ class LastUsedDesktops {
     navigateToDesktop(id) {
         const targetDesktop = workspace.desktops.find(desktop => desktop.id === id);
         if (targetDesktop) {
-            debug(`Navigating to desktop ${this.desc(id)}`);
+            debug(`Navigating to desktop ${this.map.desc(id)}`);
             workspace.currentDesktop = targetDesktop;
         } else {
-            debug(`Failed to navigate to desktop ${this.desc(id)}: not found`);
+            debug(`Failed to navigate to desktop ${this.map.desc(id)}: not found`);
         }
     }
 }

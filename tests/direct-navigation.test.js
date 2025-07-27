@@ -205,19 +205,19 @@ describe('Direct Desktop Navigation', () => {
 
     describe('Desktop Mapping', () => {
         test('should correctly map desktop numbers to UUIDs', () => {
-            expect(script.desktopID[1]).toBe(testUUIDs[0]);
-            expect(script.desktopID[2]).toBe(testUUIDs[1]);
-            expect(script.desktopID[3]).toBe(testUUIDs[2]);
-            expect(script.desktopID[4]).toBe(testUUIDs[3]);
-            expect(script.desktopID[5]).toBe(testUUIDs[4]);
+            expect(script.map.desktopID[1]).toBe(testUUIDs[0]);
+            expect(script.map.desktopID[2]).toBe(testUUIDs[1]);
+            expect(script.map.desktopID[3]).toBe(testUUIDs[2]);
+            expect(script.map.desktopID[4]).toBe(testUUIDs[3]);
+            expect(script.map.desktopID[5]).toBe(testUUIDs[4]);
         });
 
         test('should correctly map UUIDs to desktop numbers', () => {
-            expect(script.desktopNum[testUUIDs[0]]).toBe(1);
-            expect(script.desktopNum[testUUIDs[1]]).toBe(2);
-            expect(script.desktopNum[testUUIDs[2]]).toBe(3);
-            expect(script.desktopNum[testUUIDs[3]]).toBe(4);
-            expect(script.desktopNum[testUUIDs[4]]).toBe(5);
+            expect(script.map.desktopNum[testUUIDs[0]]).toBe(1);
+            expect(script.map.desktopNum[testUUIDs[1]]).toBe(2);
+            expect(script.map.desktopNum[testUUIDs[2]]).toBe(3);
+            expect(script.map.desktopNum[testUUIDs[3]]).toBe(4);
+            expect(script.map.desktopNum[testUUIDs[4]]).toBe(5);
         });
 
         test('should rebuild mappings when desktops change', () => {
@@ -234,10 +234,10 @@ describe('Direct Desktop Navigation', () => {
             desktopsChangedHandler();
 
             // Mappings should be updated
-            expect(script.desktopID[1]).toBe('new-uuid-1');
-            expect(script.desktopID[2]).toBe('new-uuid-2');
-            expect(script.desktopNum['new-uuid-1']).toBe(1);
-            expect(script.desktopNum['new-uuid-2']).toBe(2);
+            expect(script.map.desktopID[1]).toBe('new-uuid-1');
+            expect(script.map.desktopID[2]).toBe('new-uuid-2');
+            expect(script.map.desktopNum['new-uuid-1']).toBe(1);
+            expect(script.map.desktopNum['new-uuid-2']).toBe(2);
         });
     });
 
@@ -256,7 +256,7 @@ describe('Direct Desktop Navigation', () => {
 
         test('should handle corrupted desktop mappings', () => {
             // Corrupt the mapping
-            script.desktopID[3] = 'non-existent-uuid';
+            script.map.desktopID[3] = 'non-existent-uuid';
 
             const originalDesktop = mockWorkspace.currentDesktop.id;
 

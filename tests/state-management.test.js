@@ -88,9 +88,9 @@ describe('State Management and Edge Cases', () => {
             script = loadScript();
 
             // Should use array index + 1 as fallback
-            expect(script.desktopID[1]).toBe(testUUIDs[0]);
-            expect(script.desktopID[2]).toBe(testUUIDs[1]); // index 1 + 1 = 2
-            expect(script.desktopID[3]).toBe(testUUIDs[2]); // index 2 + 1 = 3
+            expect(script.map.desktopID[1]).toBe(testUUIDs[0]);
+            expect(script.map.desktopID[2]).toBe(testUUIDs[1]); // index 1 + 1 = 2
+            expect(script.map.desktopID[3]).toBe(testUUIDs[2]); // index 2 + 1 = 3
         });
     });
 
@@ -201,10 +201,10 @@ describe('State Management and Edge Cases', () => {
             desktopsChangedHandler();
 
             // Mappings should be rebuilt
-            expect(script.desktopID[1]).toBe(newUUIDs[0]);
-            expect(script.desktopID[2]).toBe(newUUIDs[1]);
-            expect(script.desktopNum[newUUIDs[0]]).toBe(1);
-            expect(script.desktopNum[newUUIDs[1]]).toBe(2);
+            expect(script.map.desktopID[1]).toBe(newUUIDs[0]);
+            expect(script.map.desktopID[2]).toBe(newUUIDs[1]);
+            expect(script.map.desktopNum[newUUIDs[0]]).toBe(1);
+            expect(script.map.desktopNum[newUUIDs[1]]).toBe(2);
         });
 
         test('should reset history on desktops change', () => {
@@ -259,10 +259,10 @@ describe('State Management and Edge Cases', () => {
         });
 
         test('should describe desktop correctly', () => {
-            const desc1 = script.desc(testUUIDs[0]);
+            const desc1 = script.map.desc(testUUIDs[0]);
             expect(desc1).toBe('desktop 1');
 
-            const descUnknown = script.desc('unknown-uuid');
+            const descUnknown = script.map.desc('unknown-uuid');
             expect(descUnknown).toBe('desktop unknown-uuid');
         });
 
