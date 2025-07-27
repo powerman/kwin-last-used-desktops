@@ -1,6 +1,6 @@
 {
   "name": "kwin-last-used-desktops",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "type": "module",
   "description": "A KWin script for KDE Plasma 6 that provides intelligent virtual desktop navigation through history-based switching and desktop toggle functionality",
   "main": "contents/code/main.js",
