@@ -3,6 +3,18 @@
 const SCRIPT_VERSION = 'v0.3.0';
 
 /**
+ * Unified debug logging function.
+ * @param {string} msg
+ * @param {...any} args
+ */
+function debug(msg, ...args) {
+    if (debug.enabled) {
+        console.log(`LastUsedDesktops: ${msg}`, ...args);
+    }
+}
+debug.enabled = readConfig('debugEnabled', false);
+
+/**
  * Last Used Virtual Desktops - KWin Script.
  *
  * Provides intelligent virtual desktop navigation through:
@@ -18,9 +30,6 @@ class LastUsedDesktops {
      * Initialize the desktop navigation system.
      */
     constructor() {
-        /** @type {boolean} */
-        this.debugEnabled = readConfig('debugEnabled', false);
-
         /** @type {Object<number, string>} Map of desktop number to ID. */
         this.desktopID = {};
         /** @type {Object<string, number>} Map of desktop ID to number. */
@@ -36,24 +45,12 @@ class LastUsedDesktops {
         /** @type {number} Timestamp of the last "previous used desktop" shortcut press. */
         this.lastPrevUsedShortcutTime = 0;
 
-        this.debug(`Script started (version: ${SCRIPT_VERSION})`);
+        debug(`Script started (version: ${SCRIPT_VERSION})`);
 
         this.initDesktops();
 
         this.connectSignals();
         this.registerShortcuts();
-    }
-
-    /**
-     * Logs with script name prefix.
-     * @param {string} msg - Log message.
-     * @param {...any} args - Additional values.
-     * @private
-     */
-    debug(msg, ...args) {
-        if (this.debugEnabled) {
-            console.log(`LastUsedDesktops: ${msg}`, ...args);
-        }
     }
 
     /**
@@ -87,7 +84,7 @@ class LastUsedDesktops {
     resetHistory() {
         this.desktopHistory = [workspace.currentDesktop.id];
         this.candidateIdx = null;
-        this.debug(`History reset to [${this.desc(this.desktopHistory[0])}]`);
+        debug(`History reset to [${this.desc(this.desktopHistory[0])}]`);
     }
 
     /**
@@ -95,7 +92,7 @@ class LastUsedDesktops {
      * @private
      */
     buildDesktopMap() {
-        this.debug(`Building desktop map for ${workspace.desktops.length} desktops`);
+        debug(`Building desktop map for ${workspace.desktops.length} desktops`);
         this.desktopID = {};
         this.desktopNum = {};
         for (let i = 0; i < workspace.desktops.length; i++) {
@@ -103,7 +100,7 @@ class LastUsedDesktops {
             const desktopNum = desktop.x11DesktopNumber || i + 1; // Is this fallback for Wayland?
             this.desktopID[desktopNum] = desktop.id;
             this.desktopNum[desktop.id] = desktopNum;
-            this.debug(`Desktop added: number ${desktopNum}, id ${desktop.id}`);
+            debug(`Desktop added: number ${desktopNum}, id ${desktop.id}`);
         }
     }
 
@@ -128,7 +125,7 @@ class LastUsedDesktops {
             () => this.onPrevUsedDesktop(),
         );
 
-        this.debug(`Registering shortcuts for ${workspace.desktops.length} desktops`);
+        debug(`Registering shortcuts for ${workspace.desktops.length} desktops`);
         for (let i = 1; i <= Math.max(20, workspace.desktops.length); i++) {
             registerShortcut(
                 `Go to Desktop ${i}`,
@@ -144,7 +141,7 @@ class LastUsedDesktops {
      * @private
      */
     onDesktopsChanged() {
-        this.debug('Signal: Desktops changed');
+        debug('Signal: Desktops changed');
         this.initDesktops();
     }
 
@@ -156,7 +153,7 @@ class LastUsedDesktops {
     onCurrentDesktopChanged(prevDesktop) {
         const prev = this.desc(prevDesktop.id);
         const current = this.desc(workspace.currentDesktop.id);
-        this.debug(`Signal: Current desktop changed from ${prev} to ${current}`);
+        debug(`Signal: Current desktop changed from ${prev} to ${current}`);
         this.handleCurrentDesktopChanged();
     }
 
@@ -170,7 +167,7 @@ class LastUsedDesktops {
         this.lastPrevUsedShortcutTime = now;
         const isContinuing = timeDiff < this.continuationDelay;
 
-        this.debug(`Shortcut: Previous used desktop (continuing: ${isContinuing})`);
+        debug(`Shortcut: Previous used desktop (continuing: ${isContinuing})`);
         this.switchToPrevUsedDesktop(isContinuing);
     }
 
@@ -180,7 +177,7 @@ class LastUsedDesktops {
      * @private
      */
     onToggleDesktop(desktopNum) {
-        this.debug(`Shortcut: Toggle desktop ${desktopNum}`);
+        debug(`Shortcut: Toggle desktop ${desktopNum}`);
         this.toggleDesktop(desktopNum);
     }
 
@@ -194,7 +191,7 @@ class LastUsedDesktops {
             this.finalizeContinuing();
             this.addToHistory(id);
         } else {
-            this.debug(`Skipping adding ${this.desc(id)} to history (continuing navigation)`);
+            debug(`Skipping adding ${this.desc(id)} to history (continuing navigation)`);
         }
     }
 
@@ -231,11 +228,11 @@ class LastUsedDesktops {
 
         this.finalizeContinuing();
         if (!targetId) {
-            this.debug(`Desktop ${desktopNum} not found`);
+            debug(`Desktop ${desktopNum} not found`);
         } else if (currentId !== targetId) {
             this.navigateToDesktop(targetId);
         } else {
-            this.debug(`Already on desktop ${desktopNum}; switching to previous used desktop`);
+            debug(`Already on desktop ${desktopNum}; switching to previous used desktop`);
             this.switchToPrevUsedDesktop(false);
             this.finalizeContinuing();
         }
@@ -265,9 +262,7 @@ class LastUsedDesktops {
         }
 
         this.desktopHistory.push(id);
-        this.debug(
-            `Desktop ${this.desc(id)} added to history (size=${this.desktopHistory.length})`,
-        );
+        debug(`Desktop ${this.desc(id)} added to history (size=${this.desktopHistory.length})`);
     }
 
     /**
@@ -278,17 +273,19 @@ class LastUsedDesktops {
     navigateToDesktop(id) {
         const targetDesktop = workspace.desktops.find(desktop => desktop.id === id);
         if (targetDesktop) {
-            this.debug(`Navigating to desktop ${this.desc(id)}`);
+            debug(`Navigating to desktop ${this.desc(id)}`);
             workspace.currentDesktop = targetDesktop;
         } else {
-            this.debug(`Failed to navigate to desktop ${this.desc(id)}: not found`);
+            debug(`Failed to navigate to desktop ${this.desc(id)}: not found`);
         }
     }
 }
 
 // Initialize the script.
 const script = new LastUsedDesktops();
+
 if (typeof globalThis !== 'undefined') {
     // @ts-ignore - Node.js/Jest export for tests
+    globalThis.debug = debug;
     globalThis.lastUsedDesktops = script;
 }

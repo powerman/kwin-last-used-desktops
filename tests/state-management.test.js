@@ -54,17 +54,23 @@ describe('State Management and Edge Cases', () => {
     let mockWorkspace;
     let mockRegisterShortcut;
     let script;
+    let debug;
 
     beforeEach(() => {
         jest.clearAllMocks();
 
         mockRegisterShortcut = jest.fn();
-
+        // workspace должен быть установлен до загрузки скрипта
+        mockWorkspace = createMockWorkspace();
+        globalThis.workspace = mockWorkspace;
         globalThis.registerShortcut = mockRegisterShortcut;
         globalThis.readConfig = jest.fn((key, defaultValue) => defaultValue);
         globalThis.console = { log: jest.fn(), error: jest.fn() };
 
         jest.spyOn(Date, 'now').mockReturnValue(1000);
+        // Загружаем скрипт и получаем глобальную функцию debug
+        script = loadScript();
+        debug = globalThis.debug;
     });
 
     afterEach(() => {
@@ -212,7 +218,6 @@ describe('State Management and Edge Cases', () => {
             // History should be reset to current desktop
             expect(script.desktopHistory).toEqual([mockWorkspace.currentDesktop.id]);
             expect(script.candidateIdx).toBe(null);
-
         });
     });
 
@@ -262,10 +267,10 @@ describe('State Management and Edge Cases', () => {
         });
 
         test('should handle debug logging', () => {
-            script.debugEnabled = true;
+            debug.enabled = true;
 
             expect(() => {
-                script.debug('Test message', 'extra', 'args');
+                debug('Test message', 'extra', 'args');
             }).not.toThrow();
 
             expect(globalThis.console.log).toHaveBeenCalledWith(
@@ -276,9 +281,11 @@ describe('State Management and Edge Cases', () => {
         });
 
         test('should not log when debug disabled', () => {
-            script.debugEnabled = false;
-
-            script.debug('Test message');
+            // debugEnabled is now global, but cannot be changed directly in production
+            // Clear mock to count only new calls
+            debug.enabled = false;
+            globalThis.console.log.mockClear();
+            debug('Test message');
 
             expect(globalThis.console.log).not.toHaveBeenCalled();
         });
