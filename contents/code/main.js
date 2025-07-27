@@ -207,9 +207,7 @@ class LastUsedDesktops {
      * @private
      */
     switchToPrevUsedDesktop(isContinuing) {
-        // FIXME: A quick sequence of Prev→{Toggle|Switch}→Prev will result in
-        // isContinuing being true while desktopHistoryIdx will be wrong (reset to 0).
-        if (isContinuing) {
+        if (isContinuing && this.candidateDesktopId !== null) {
             this.desktopHistoryIdx--;
         } else {
             // First press - complete continuing navigation and start fresh.
@@ -236,14 +234,15 @@ class LastUsedDesktops {
         const targetId = this.desktopID[desktopNum];
         const currentId = workspace.currentDesktop.id;
 
+        this.finalizeContinuing();
         if (!targetId) {
             this.debug(`Desktop ${desktopNum} not found`);
         } else if (currentId !== targetId) {
             this.navigateToDesktop(targetId);
         } else {
             this.debug(`Already on desktop ${desktopNum}; switching to previous used desktop`);
-            this.lastPrevUsedShortcutTime = 0; // Handle as a first press.
-            this.onPrevUsedDesktop();
+            this.switchToPrevUsedDesktop(false);
+            this.finalizeContinuing();
         }
     }
 
