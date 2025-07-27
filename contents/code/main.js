@@ -28,10 +28,8 @@ class LastUsedDesktops {
 
         /** @type {string[]} History of desktop IDs in usage order (current is the last). */
         this.desktopHistory = [workspace.currentDesktop.id];
-        /** @type {number} Current position in history during (continuing) navigation. */
-        this.desktopHistoryIdx = 0;
-        /** @type {string|null} Candidate desktop ID during navigation. */
-        this.candidateDesktopId = null;
+        /** @type {number|null} Candidate desktop index during (continuing) navigation. */
+        this.candidateIdx = null;
 
         /** @type {number} Delay in ms to detect continuation of shortcut presses. */
         this.continuationDelay = readConfig('continuationDelay', 500);
@@ -88,8 +86,7 @@ class LastUsedDesktops {
      */
     resetHistory() {
         this.desktopHistory = [workspace.currentDesktop.id];
-        this.desktopHistoryIdx = 0;
-        this.candidateDesktopId = null;
+        this.candidateIdx = null;
         this.debug(`History reset to [${this.desc(this.desktopHistory[0])}]`);
     }
 
@@ -193,7 +190,7 @@ class LastUsedDesktops {
      */
     handleCurrentDesktopChanged() {
         const id = workspace.currentDesktop.id;
-        if (this.candidateDesktopId === null || this.candidateDesktopId !== id) {
+        if (this.candidateIdx === null || this.desktopHistory[this.candidateIdx] !== id) {
             this.finalizeContinuing();
             this.addToHistory(id);
         } else {
@@ -207,22 +204,20 @@ class LastUsedDesktops {
      * @private
      */
     switchToPrevUsedDesktop(isContinuing) {
-        if (isContinuing && this.candidateDesktopId !== null) {
-            this.desktopHistoryIdx--;
+        if (isContinuing && this.candidateIdx !== null) {
+            this.candidateIdx--;
         } else {
             // First press - complete continuing navigation and start fresh.
             this.finalizeContinuing();
 
             // Start from the previous desktop in history.
-            this.desktopHistoryIdx = this.desktopHistory.length - 2;
+            this.candidateIdx = this.desktopHistory.length - 2;
         }
 
-        if (this.desktopHistoryIdx < 0) {
-            this.desktopHistoryIdx = 0;
+        if (this.candidateIdx < 0) {
+            this.candidateIdx = 0;
         }
-        this.candidateDesktopId = this.desktopHistory[this.desktopHistoryIdx];
-
-        this.navigateToDesktop(this.candidateDesktopId);
+        this.navigateToDesktop(this.desktopHistory[this.candidateIdx]);
     }
 
     /**
@@ -251,9 +246,9 @@ class LastUsedDesktops {
      * @private
      */
     finalizeContinuing() {
-        if (this.candidateDesktopId !== null) {
-            this.addToHistory(this.candidateDesktopId);
-            this.candidateDesktopId = null;
+        if (this.candidateIdx !== null) {
+            this.addToHistory(this.desktopHistory[this.candidateIdx]);
+            this.candidateIdx = null;
         }
     }
 

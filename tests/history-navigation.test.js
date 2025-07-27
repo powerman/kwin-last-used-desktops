@@ -78,7 +78,7 @@ describe('History Navigation', () => {
     describe('History Building', () => {
         test('should start with current desktop in history', () => {
             expect(script.desktopHistory).toEqual([testUUIDs[0]]);
-            expect(script.desktopHistoryIdx).toBe(0);
+            expect(script.candidateIdx).toBe(null);
         });
 
         test('should add new desktops to history in order', () => {
@@ -191,7 +191,7 @@ describe('History Navigation', () => {
 
             // After first navigation finalizeContinuing() was called
             // History is now: [Desktop 1, Desktop 2, Desktop 3, Desktop 2 (from navigation)]
-            // Second navigation: desktopHistoryIdx = length-2 = 4-2 = 2, so history[2] = Desktop 3
+            // Second navigation: candidateIdx = length-2 = 4-2 = 2, so history[2] = Desktop 3
             expect(mockWorkspace.currentDesktop.id).toBe(testUUIDs[2]); // Desktop 3, not Desktop 2
         });
     });
@@ -205,8 +205,9 @@ describe('History Navigation', () => {
             // Start navigation
             historyNavigationHandler();
 
-            // Should have set target desktop
-            expect(script.candidateDesktopId).toBe(testUUIDs[0]);
+            // Должен быть выбран предыдущий индекс
+            expect(script.candidateIdx).toBe(script.desktopHistory.length - 2);
+            expect(script.desktopHistory[script.candidateIdx]).toBe(testUUIDs[0]);
         });
 
         test('should commit navigation to history properly', () => {
@@ -222,7 +223,7 @@ describe('History Navigation', () => {
             // historyNavigation already called finalizeContinuing() if candidateDesktopId was not null
             // So history length should already be increased by 1
             expect(script.desktopHistory.length).toBe(historyBefore.length);
-            expect(script.candidateDesktopId).not.toBe(null); // New target was set
+            expect(script.candidateIdx).not.toBe(null); // New target was set
         });
 
         test('should not record intermediate navigation steps', () => {
@@ -269,7 +270,7 @@ describe('History Navigation', () => {
 
             // Should reset to current desktop only
             expect(script.desktopHistory).toEqual([mockWorkspace.currentDesktop.id]);
-            expect(script.desktopHistoryIdx).toBe(0);
+            expect(script.candidateIdx).toBe(null);
         });
     });
 });
