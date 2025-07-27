@@ -68,6 +68,30 @@ class DesktopMap {
 }
 
 /**
+ * ShortcutContinuation - manages timing for shortcut continuation logic.
+ * @class ShortcutContinuation
+ */
+class ShortcutContinuation {
+    constructor() {
+        /** @type {number} Delay in ms to detect continuation of shortcut presses. */
+        this.delay = readConfig('continuationDelay', 500);
+        /** @type {number} Timestamp of the last shortcut press. */
+        this.lastTime = 0;
+    }
+
+    /**
+     * Checks if the current shortcut press is a continuation.
+     * @returns {boolean}
+     */
+    isContinuing() {
+        const now = Date.now();
+        const timeDiff = now - this.lastTime;
+        this.lastTime = now;
+        return timeDiff < this.delay;
+    }
+}
+
+/**
  * Last Used Virtual Desktops - KWin Script.
  *
  * Provides intelligent virtual desktop navigation through:
@@ -84,16 +108,13 @@ class LastUsedDesktops {
     constructor() {
         /** @type {DesktopMap} */
         this.map = new DesktopMap();
+        /** @type {ShortcutContinuation} */
+        this.continuation = new ShortcutContinuation();
 
         /** @type {string[]} History of desktop IDs in usage order (current is the last). */
         this.desktopHistory = [workspace.currentDesktop.id];
         /** @type {number|null} Candidate desktop index during (continuing) navigation. */
         this.candidateIdx = null;
-
-        /** @type {number} Delay in ms to detect continuation of shortcut presses. */
-        this.continuationDelay = readConfig('continuationDelay', 500);
-        /** @type {number} Timestamp of the last "previous used desktop" shortcut press. */
-        this.lastPrevUsedShortcutTime = 0;
 
         debug(`Script started (version: ${SCRIPT_VERSION})`);
 
@@ -180,11 +201,7 @@ class LastUsedDesktops {
      * @private
      */
     onPrevUsedDesktop() {
-        const now = Date.now();
-        const timeDiff = now - this.lastPrevUsedShortcutTime;
-        this.lastPrevUsedShortcutTime = now;
-        const isContinuing = timeDiff < this.continuationDelay;
-
+        const isContinuing = this.continuation.isContinuing();
         debug(`Shortcut: Previous used desktop (continuing: ${isContinuing})`);
         this.switchToPrevUsedDesktop(isContinuing);
     }

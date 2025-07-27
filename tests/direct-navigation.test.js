@@ -199,7 +199,7 @@ describe('Direct Desktop Navigation', () => {
             // The toggle should have used history navigation internally
             // which sets lastPrevUsedShortcutTime to current time,
             // but then it should reset it to 0 because toggle should not start continuing.
-            expect(script.lastPrevUsedShortcutTime).toBe(0);
+            expect(script.continuation.lastTime).toBe(0);
         });
     });
 
