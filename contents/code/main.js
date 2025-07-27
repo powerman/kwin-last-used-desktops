@@ -1,6 +1,6 @@
 'use strict';
 
-const SCRIPT_VERSION = 'v0.2.0';
+const SCRIPT_VERSION = 'v0.3.0';
 
 /**
  * Last Used Virtual Desktops - KWin Script.
