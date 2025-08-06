@@ -15,7 +15,7 @@ env:
 
 jobs:
   release-pr:
-    uses: powerman/workflows/.github/workflows/release-pr.yml@v0.4.1
+    uses: powerman/workflows/.github/workflows/release-pr.yml@v0.4.3
     with:
       version_cmd: |
         export VERSION_NUM="${RELEASE_PR_VERSION#v}"
