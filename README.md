@@ -1,10 +1,11 @@
 # Last Used Virtual Desktops
 
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![JavaScript](https://img.shields.io/badge/javascript-ES2020-yellow.svg)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![KDE Plasma](https://img.shields.io/badge/KDE%20Plasma-6.0+-blue.svg)](https://kde.org/plasma-desktop/)
-[![Tests](https://github.com/powerman/kwin-last-used-desktops/actions/workflows/test.yml/badge.svg)](https://github.com/powerman/kwin-last-used-desktops/actions/workflows/test.yml)
-[![KDE Store](https://img.shields.io/badge/KDE%20Store-Download-blue?logo=kde)](https://store.kde.org/p/2304487)
+[![License MIT](https://img.shields.io/badge/license-MIT-royalblue.svg)](LICENSE)
+[![KDE Plasma 6+](https://img.shields.io/badge/KDE%20Plasma-6+-royalblue.svg?logo=kde-plasma&logoColor=white)](https://kde.org/plasma-desktop/)
+[![JavaScript ES2020](https://img.shields.io/badge/JavaScript-ES2020-blue.svg)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Test](https://img.shields.io/github/actions/workflow/status/powerman/kwin-last-used-desktops/test.yml?label=test)](https://github.com/powerman/kwin-last-used-desktops/actions/workflows/test.yml)
+[![Release](https://img.shields.io/github/v/release/powerman/kwin-last-used-desktops?color=blue)](https://github.com/powerman/kwin-last-used-desktops/releases/latest)
+[![KDE Store](https://img.shields.io/badge/KDE%20Store-Download-blue?logo=kde&logoColor=white)](https://store.kde.org/p/{ID})
 
 A KWin script for KDE Plasma 6 that provides intelligent virtual desktop navigation
 through history-based switching and desktop toggle functionality.
