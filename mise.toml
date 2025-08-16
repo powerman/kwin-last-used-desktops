@@ -6,14 +6,18 @@ lockfile = true     # DO NOT FORGET TO `touch mise.lock` if mise.lock does not e
 [tools]
 node = 'lts'
 
-#--- Test & Lint
+#--- Format
+# Opinionated Code Formatter.
+'npm:prettier' = 'latest'
+
+#--- Lint
 # Static checker for GitHub Actions workflow files.
 actionlint = 'latest'
-# ESLint for JavaScript linting
+# A tool for identifying and reporting on patterns found in ECMAScript/JavaScript code.
 'npm:eslint' = 'latest'
-# Prettier for code formatting
-'npm:prettier' = 'latest'
-# Jest for testing
+
+#--- Test
+# Delightful JavaScript Testing.
 'npm:jest' = 'latest'
 
 #--- Release
@@ -25,9 +29,31 @@ gh = 'latest'
 jq = 'latest'
 
 
+[tasks.'changelog:skip-commit']
+description = 'Add commit hash to .cliffignore to exclude from CHANGELOG'
+usage = 'arg "<commit>" help="Git revision (e.g. HEAD or a1b2c4d)"'
+run = 'git rev-parse --verify "${usage_commit}" >> .cliffignore'
+
 [tasks.fmt]
-description = 'Format all code'
+description = 'Format all files'
 depends = ['fmt:*']
+
+[tasks.lint]
+description = 'Run all linters'
+depends = ['lint:*']
+
+[tasks.test]
+description = 'Run all tests'
+depends = ['test:*']
+
+[tasks.default]
+description = 'Run all linters and tests'
+depends = ['lint', 'test']
+
+[tasks.ci]
+description = 'Run all CI tasks'
+depends = ['fmt', 'lint', 'test']
+run = '! git status --porcelain | tee /dev/stderr | grep -q .' # Is working tree clean after fmt?
 
 [tasks.'fmt:js']
 description = 'Format JavaScript code'
@@ -36,15 +62,6 @@ run = 'prettier --write "**/*.js"'
 [tasks.'fmt:xml']
 description = 'Format XML files'
 run = 'find contents -type f \( -name "*.xml" -o -name "*.ui" \) -print0 | xargs -0 -I{} xmllint --format {} --output {}'
-
-[tasks.test]
-alias = 'default'
-description = 'Run all linters and tests'
-depends = ['lint', 'test:*']
-
-[tasks.lint]
-description = 'Run all linters'
-depends = ['lint:*']
 
 [tasks.'lint:workflows']
 description = 'Lint GitHub Action workflows'
@@ -81,11 +98,6 @@ sleep 1
 kwriteconfig6 --file kwinrc --group Plugins --key kwin-last-used-desktopsEnabled true
 qdbus org.kde.KWin /KWin reconfigure
 '''
-
-[tasks.'changelog:skip-commit']
-description = 'Add commit hash to .cliffignore to exclude from CHANGELOG'
-usage = 'arg "<commit>" help="Git revision (e.g. HEAD or a1b2c4d)"'
-run = 'git rev-parse --verify "${usage_commit}" >> .cliffignore'
 
 [tasks.cachedir]
 hide = true

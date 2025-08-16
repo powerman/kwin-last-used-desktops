@@ -15,7 +15,7 @@ env:
 
 jobs:
   release-pr:
-    uses: powerman/workflows/.github/workflows/release-pr.yml@v0.4.1
+    uses: powerman/workflows/.github/workflows/release-pr.yml@v0.4.3
     with:
       version_cmd: |
         export VERSION_NUM="${RELEASE_PR_VERSION#v}"
@@ -34,9 +34,10 @@ jobs:
     timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           token: ${{ env.GITHUB_TOKEN }}
+          ref: ${{ needs.release-pr.outputs.version }}
 
       - uses: jdx/mise-action@v2
 
@@ -51,13 +52,13 @@ jobs:
       - name: Upload files to the release
         uses: softprops/action-gh-release@v2
         with:
+          token: ${{ env.GITHUB_TOKEN }}
           tag_name: ${{ needs.release-pr.outputs.version }}
           body: ${{ needs.release-pr.outputs.changelog }}
           files: .cache/kwin-last-used-desktops.kwinscript*
           draft: true
           prerelease: ${{ needs.release-pr.outputs.prerelease }}
           make_latest: false
-          token: ${{ env.GITHUB_TOKEN }}
 
   # Mark release as non-draft and latest.
   finalize:
@@ -71,9 +72,9 @@ jobs:
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
+          token: ${{ env.GITHUB_TOKEN }}
           tag_name: ${{ needs.release-pr.outputs.version }}
           body: ${{ needs.release-pr.outputs.changelog }}
           draft: false
           prerelease: ${{ needs.release-pr.outputs.prerelease }}
-          make_latest: true
-          token: ${{ env.GITHUB_TOKEN }}
+          make_latest: ${{ needs.release-pr.outputs.prerelease != 'true' }}

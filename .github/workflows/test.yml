@@ -2,7 +2,6 @@ name: Test
 
 on:
   workflow_dispatch:
-  workflow_call:
   push:
     branches: [main]
   pull_request:
@@ -14,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: write # To update gh-badges branch.
+  contents: read
 
 jobs:
   test:
@@ -22,7 +21,7 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Install xmllint
         uses: awalsh128/cache-apt-pkgs-action@v1
@@ -30,5 +29,6 @@ jobs:
           packages: libxml2-utils
 
       - uses: jdx/mise-action@v2
+      - run: git reset --hard # Work around https://github.com/jdx/mise/discussions/5910.
 
-      - run: mise run test
+      - run: mise run ci
