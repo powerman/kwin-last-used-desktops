@@ -5,7 +5,7 @@
 [![JavaScript ES2020](https://img.shields.io/badge/JavaScript-ES2020-blue.svg)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![Test](https://img.shields.io/github/actions/workflow/status/powerman/kwin-last-used-desktops/test.yml?label=test)](https://github.com/powerman/kwin-last-used-desktops/actions/workflows/test.yml)
 [![Release](https://img.shields.io/github/v/release/powerman/kwin-last-used-desktops?color=blue)](https://github.com/powerman/kwin-last-used-desktops/releases/latest)
-[![KDE Store](https://img.shields.io/badge/KDE%20Store-Download-blue?logo=kde&logoColor=white)](https://store.kde.org/p/{ID})
+[![KDE Store](https://img.shields.io/badge/KDE%20Store-Download-blue?logo=kde&logoColor=white)](https://store.kde.org/p/2304487)
 
 A KWin script for KDE Plasma 6 that provides intelligent virtual desktop navigation
 through history-based switching and desktop toggle functionality.
