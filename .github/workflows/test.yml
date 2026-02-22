@@ -28,7 +28,7 @@ jobs:
         with:
           packages: libxml2-utils
 
-      - uses: jdx/mise-action@v2
-      - run: git reset --hard # Work around https://github.com/jdx/mise/discussions/5910.
+      - uses: jdx/mise-action@v3
+      - run: git reset --hard # Work around https://github.com/jdx/mise/discussions/8270.
 
       - run: mise run ci
