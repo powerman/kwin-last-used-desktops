@@ -7,7 +7,4 @@
 # !name     - include previously excluded path …
 /.cache/
 
-**/*mise.local.toml
-**/*mise/config.local.toml
-
 node_modules/
