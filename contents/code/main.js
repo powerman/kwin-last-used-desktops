@@ -1,6 +1,6 @@
 'use strict';
 
-const SCRIPT_VERSION = 'v1.0.0';
+const SCRIPT_VERSION = 'v1.0.1';
 
 /**
  * Unified debug logging function.
