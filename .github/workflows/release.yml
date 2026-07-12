@@ -50,7 +50,7 @@ jobs:
         run: cosign sign-blob --yes .cache/kwin-last-used-desktops.kwinscript --output-signature .cache/kwin-last-used-desktops.kwinscript.sig
 
       - name: Upload files to the release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           token: ${{ env.GITHUB_TOKEN }}
           tag_name: ${{ needs.release-pr.outputs.version }}
@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Publish release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           token: ${{ env.GITHUB_TOKEN }}
           tag_name: ${{ needs.release-pr.outputs.version }}
