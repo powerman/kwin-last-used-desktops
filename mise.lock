@@ -220,3 +220,7 @@ backend = "npm:jest"
 [[tools."npm:prettier"]]
 version = "3.9.4"
 backend = "npm:prettier"
+
+[[tools.prettier]]
+version = "3.9.4"
+backend = "npm:prettier"

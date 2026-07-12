@@ -7,7 +7,7 @@ node = 'lts'
 
 #--- Format
 # Opinionated Code Formatter.
-'npm:prettier' = 'latest'
+prettier = 'latest'
 
 #--- Lint
 # Static checker for GitHub Actions workflow files.
@@ -46,13 +46,19 @@ description = 'Run all tests'
 depends = ['test:*']
 
 [tasks.default]
-description = 'Run all linters and tests'
-depends = ['lint', 'test']
+description = 'Run all formatters, linters and tests'
+depends = ['fmt', 'lint', 'test']
 
 [tasks.ci]
 description = 'Run all CI tasks'
 depends = ['fmt', 'lint', 'test']
-run = '! git status --porcelain | tee /dev/stderr | grep -q .' # Is working tree clean after fmt?
+# Is working tree clean after fmt?
+run = '! git status --porcelain | tee /dev/stderr | grep -q .'
+
+[tasks.'fmt:markdown']
+description = 'Format markdown files'
+sources = ['**/*.md']
+run = 'prettier --write "**/*.md"'
 
 [tasks.'fmt:js']
 description = 'Format JavaScript code'
@@ -65,6 +71,12 @@ run = 'find contents -type f \( -name "*.xml" -o -name "*.ui" \) -print0 | xargs
 [tasks.'lint:workflows']
 description = 'Lint GitHub Action workflows'
 run = 'actionlint'
+
+[tasks.'lint:markdown']
+description = 'Lint markdown files'
+wait_for = ['fmt:markdown']
+sources = ['**/*.md']
+run = 'prettier --check "**/*.md"'
 
 [tasks.'lint:js']
 description = 'Lint JavaScript files'
