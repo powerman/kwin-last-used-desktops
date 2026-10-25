@@ -1,9 +1,11 @@
 [settings]
-lockfile = true # DO NOT FORGET TO `touch mise.lock` if mise.lock does not exist!
+lockfile = true              # DO NOT FORGET TO `touch mise.lock` if mise.lock does not exist!
+npm.package_manager = 'pnpm' # Avoid .mise/locks/** sidecars required by default aube.
 
 
 [tools]
 node = 'lts'
+pnpm = 'latest'
 
 #--- Format
 # Opinionated Code Formatter.
