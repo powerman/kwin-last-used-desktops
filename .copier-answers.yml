@@ -1,4 +1,6 @@
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-_commit: v4
+_commit: v9
 _src_path: ~/Templates/copier-base
+codegen: false
 custom_cliff: false
+project_name: kwin-last-used-desktops
